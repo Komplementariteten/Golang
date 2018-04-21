@@ -1,12 +1,10 @@
-// +build !go1.7
-
-package tutorial
+package main
 
 import (
 	"fmt"
-	"shared"
+	"ventose.cc/thrift/shared"
 	"strconv"
-	"tutorial"
+	"ventose.cc/thrift/tutorial"
 
 	"golang.org/x/net/context"
 )
