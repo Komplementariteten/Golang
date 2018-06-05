@@ -1,21 +1,21 @@
-package db
+package main
 
 import (
+	"fmt"
 	"github.com/boltdb/bolt"
 	"os"
 	"sync"
-	"fmt"
 	"ventose.cc/tools"
 )
 
 const (
-	BUFF_SIZE = 64
-	COMMAND_TYPES = 3
-	RESPONSE_TYPES = 5
-	MIN_BUCKETNAME_SIZE = 3
-	QUERY_TYPES QueryType = 7
-	CLOSE_COMMAND = iota * COMMAND_TYPES
-	ERROR ResponseType = iota * RESPONSE_TYPES
+	BUFF_SIZE                        = 64
+	COMMAND_TYPES                    = 3
+	RESPONSE_TYPES                   = 5
+	MIN_BUCKETNAME_SIZE              = 3
+	QUERY_TYPES         QueryType    = 7
+	CLOSE_COMMAND                    = iota * COMMAND_TYPES
+	ERROR               ResponseType = iota * RESPONSE_TYPES
 	UPDATE
 	CREATE
 	NOTFOUND
@@ -30,49 +30,49 @@ type ResponseType int
 
 type Document struct {
 	TypeName string
-	Value interface{}
-	Id []byte
+	Value    interface{}
+	Id       []byte
 }
 
 type Storage struct {
-	hndl *bolt.DB
-	Reader chan *Query
-	Result chan *Response
-	Writer chan *Document
+	hndl    *bolt.DB
+	Reader  chan *Query
+	Result  chan *Response
+	Writer  chan *Document
 	Control chan *Command
 	// Cursor chan chan *Document
 	Clients sync.WaitGroup
-	Lock sync.Mutex
+	Lock    sync.Mutex
 }
 
 type Response struct {
 	Status ResponseType
-	Error error
-	Value Document
-	Key []byte
+	Error  error
+	Value  Document
+	Key    []byte
 }
 
 type Command struct {
-
 }
 
 type Query struct {
 	DataType string
-	ID []byte
-	Type QueryType
-	Payload *Document
+	ID       []byte
+	Type     QueryType
+	Payload  *Document
 }
 
 type DbConfiguration struct {
 	Path string
 	Mode os.FileMode
-	Opt *bolt.Options
+	Opt  *bolt.Options
 }
 
 var mStorage *Storage = nil
+
 /*
 	Creates new BoltDB Backend Type with initialized Channels
- */
+*/
 func NewStorage(cfg *DbConfiguration) (s *Storage, err error) {
 
 	if cfg.Mode <= 0600 {
@@ -89,7 +89,7 @@ func NewStorage(cfg *DbConfiguration) (s *Storage, err error) {
 		return nil, fmt.Errorf("%s Exists", cfg.Path)
 	}
 
-	h, e := os.OpenFile(cfg.Path, os.O_CREATE | os.O_RDWR, 0600)
+	h, e := os.OpenFile(cfg.Path, os.O_CREATE|os.O_RDWR, 0600)
 	if e != nil {
 		return nil, fmt.Errorf("%s is not createable", cfg.Path)
 	}
@@ -119,7 +119,7 @@ func NewStorage(cfg *DbConfiguration) (s *Storage, err error) {
 
 /*
 	Closes Current BoltDB
- */
+*/
 func (s *Storage) Close() {
 	if s != nil {
 		s.Lock.Lock()
@@ -132,10 +132,9 @@ func (s *Storage) Close() {
 	}
 }
 
-
 /*
 Connect a Client to this Storage
- */
+*/
 func ConnectToStorage(ch chan *Query) <-chan *Response {
 
 	if mStorage == nil {
@@ -148,7 +147,7 @@ func ConnectToStorage(ch chan *Query) <-chan *Response {
 		for q := range ch {
 			if q.Type == READ {
 				mStorage.Reader <- q
-				resp := <- mStorage.Result
+				resp := <-mStorage.Result
 				r <- resp
 			} else if q.Type == WRITE {
 				mStorage.Writer <- q.Payload
@@ -234,26 +233,26 @@ func (s *Storage) write(q *Document) *Response {
 		r.Status = ERROR
 		r.Error = err
 	}
- 	return r
+	return r
 }
 
 func (s *Storage) Serve() error {
 	go func() {
 		for {
 			select {
-			case cmd := <- s.Control:
+			case cmd := <-s.Control:
 				s.Lock.Lock()
 				cls := s.handleCommand(cmd)
 				if cls != nil {
 					s.Result <- cls
 				}
 				s.Lock.Unlock()
-			case q := <- s.Reader:
+			case q := <-s.Reader:
 				s.Lock.Lock()
 				response := s.read(q)
 				s.Result <- response
 				s.Lock.Unlock()
-			case d := <- s.Writer:
+			case d := <-s.Writer:
 				s.Lock.Lock()
 				doc := s.write(d)
 				s.Result <- doc

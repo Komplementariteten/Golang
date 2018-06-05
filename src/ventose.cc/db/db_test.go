@@ -1,14 +1,14 @@
-package db
+package main
 
 import (
-	"testing"
-	"os"
-	"ventose.cc/tools"
 	"bytes"
+	"os"
+	"testing"
+	"ventose.cc/tools"
 )
 
 type TestDocument struct {
-	id []byte
+	id         []byte
 	TestString string
 }
 
@@ -24,10 +24,10 @@ func BenchmarkRawReadWrite(t *testing.B) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer func () {
+	defer func() {
 		s.Close()
 		os.Remove(cfg.Path)
-	} ()
+	}()
 	s.Serve()
 	//r := ConnectToStorage(c)
 
@@ -45,10 +45,10 @@ func TestClient_Relate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer func () {
+	defer func() {
 		s.Close()
 		os.Remove(cfg.Path)
-	} ()
+	}()
 	client, err := NewClient()
 	defer client.Close()
 	if err != nil {
@@ -57,7 +57,7 @@ func TestClient_Relate(t *testing.T) {
 	d := &TestDocument{}
 	rs := tools.GetRandomAsciiString(12)
 	d.TestString = rs
-	md, err := client.Add("TestDocument",d)
+	md, err := client.Add("TestDocument", d)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -68,7 +68,7 @@ func TestClient_Relate(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !bytes.Equal(md2.relationId , md.relationId) {
+	if !bytes.Equal(md2.relationId, md.relationId) {
 		t.Fatalf("raltion IDs between origin and relation don#t match")
 	}
 }
@@ -85,10 +85,10 @@ func TestNewClient(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer func () {
+	defer func() {
 		s.Close()
 		os.Remove(cfg.Path)
-	} ()
+	}()
 	client, err := NewClient()
 	defer client.Close()
 	if err != nil {
@@ -98,7 +98,7 @@ func TestNewClient(t *testing.T) {
 	rs := tools.GetRandomAsciiString(12)
 	d.TestString = rs
 
-	md, err := client.Add("TestDocument",d)
+	md, err := client.Add("TestDocument", d)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -117,7 +117,7 @@ func TestNewClient(t *testing.T) {
 	}
 
 	d.TestString = tools.GetRandomAsciiString(512)
-	dn := &Document{TypeName:d.TypeName(), Value:d, Id: md.Id}
+	dn := &Document{TypeName: d.TypeName(), Value: d, Id: md.Id}
 	md2, err2 := client.Update(dn)
 	if err2 != nil {
 		t.Fatal(err2)
@@ -188,7 +188,6 @@ func TestNewClient(t *testing.T) {
 	close(c)
 }*/
 
-
 func TestStorageRawReadWrite(t *testing.T) {
 	cfg := &DbConfiguration{}
 	cfg.Mode = 0660
@@ -197,10 +196,10 @@ func TestStorageRawReadWrite(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer func () {
+	defer func() {
 		os.Remove(cfg.Path)
 		s.Close()
-	} ()
+	}()
 	s.Serve()
 	d := &TestDocument{}
 	rs := tools.GetRandomAsciiString(12)
@@ -209,7 +208,7 @@ func TestStorageRawReadWrite(t *testing.T) {
 	doc.TypeName = "TestDocument"
 	d.TestString = rs
 	s.Writer <- doc
-	resp := <- s.Result
+	resp := <-s.Result
 	if resp.Status == ERROR {
 		t.Fatal(resp.Error)
 	}
@@ -219,7 +218,7 @@ func TestStorageRawReadWrite(t *testing.T) {
 	q.Type = READ
 	q.DataType = doc.TypeName
 	s.Reader <- q
-	r2 := <- s.Result
+	r2 := <-s.Result
 	if r2.Status == ERROR {
 		t.Fatal(r2.Error)
 	}
@@ -246,8 +245,8 @@ func TestNewStorage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer func () {
+	defer func() {
 		s.Close()
 		os.Remove(cfg.Path)
-	} ()
+	}()
 }

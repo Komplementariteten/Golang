@@ -1,5 +1,5 @@
-package db
+package main
 
-func (s *Storage) handleCommand(c *Command) *Response{
+func (s *Storage) handleCommand(c *Command) *Response {
 	return nil
 }
