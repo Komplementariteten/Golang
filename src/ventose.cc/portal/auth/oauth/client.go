@@ -1,24 +1,23 @@
 package oauth
 
 import (
-	"net/url"
-	"ventose.cc/tools"
 	"fmt"
-	"ventose.cc/auth/oauth/token"
-	"time"
+	"net/url"
 	"strings"
+	"time"
+	"ventose.cc/auth/oauth/token"
+	"ventose.cc/tools"
 )
 
 type Client struct {
-	ClientId string
-	Title string
-	Description string
-	ClientUri *url.URL
-	LoginName string
+	ClientId     string
+	Title        string
+	Description  string
+	ClientUri    *url.URL
+	LoginName    string
 	PasswordName string
-	Key []byte
+	Key          []byte
 }
-
 
 func NewClient(name string, urlString string) (*Client, error) {
 	c := &Client{}
@@ -31,8 +30,8 @@ func NewClient(name string, urlString string) (*Client, error) {
 	if !u.IsAbs() {
 		return nil, fmt.Errorf("URL has to be a absolute URL")
 	}
-	c.LoginName 	= tools.GetRandomAsciiString(20)
-	c.PasswordName 	= tools.GetRandomAsciiString(20)
+	c.LoginName = tools.GetRandomAsciiString(20)
+	c.PasswordName = tools.GetRandomAsciiString(20)
 	c.ClientUri = u
 	c.Key = tools.GetRandomBytes(256)
 	return c, nil
@@ -59,13 +58,13 @@ func (c *Client) ValidateURL(reqUrl string) (bool, error) {
 	if e != nil {
 		return false, e
 	}
-	if v.Host != c.ClientUri.Host || v.Scheme != c.ClientUri.Scheme  {
+	if v.Host != c.ClientUri.Host || v.Scheme != c.ClientUri.Scheme {
 		return false, fmt.Errorf("Host of target client URL don't match")
 	}
 	return true, nil
 }
 
-func (c *Client) GetFormToken(r *Session) (b64 string, err error){
+func (c *Client) GetFormToken(r *Session) (b64 string, err error) {
 
 	t := token.NewToken(token.TOKEN_FVT)
 	issuedAt := int(time.Now().Unix())
@@ -80,19 +79,19 @@ func (c *Client) GetFormToken(r *Session) (b64 string, err error){
 }
 
 /* OAtuh */
-func(s *OAuth) AddClient(client *Client) {
+func (s *OAuth) AddClient(client *Client) {
 
 	if !s.HasClient(client.ClientId) {
 		s.Clients[client.ClientId] = client
 	}
 }
 
-func(s *OAuth) HasClient(client_id string) bool {
+func (s *OAuth) HasClient(client_id string) bool {
 	_, ok := s.Clients[client_id]
 	return ok
 }
 
-func (s *OAuth)ResolveClient(client_id string) (*Client,error) {
+func (s *OAuth) ResolveClient(client_id string) (*Client, error) {
 	if s.HasClient(client_id) {
 		return s.Clients[client_id], nil
 	}

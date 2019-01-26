@@ -29,7 +29,6 @@ func getUrl(url string, testdata []byte) error {
 	return nil
 }
 
-
 func StartHttpFrontend(cfg *HttpFrontendConfiguration) error {
 	s, err := NewHttpFrontend(cfg)
 	if err != nil {
@@ -42,7 +41,6 @@ func StartHttpFrontend(cfg *HttpFrontendConfiguration) error {
 	}()
 	return nil
 }
-
 
 func startServer(t *testing.T) {
 

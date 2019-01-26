@@ -1,24 +1,24 @@
 package main
 
 import (
-	"ventose.cc/portal/serverold/ctrl"
-	"crypto/rsa"
-	"net/http"
-	"time"
-	"fmt"
-	"ventose.cc/tools"
-	"crypto/sha1"
-	"encoding/json"
 	"bytes"
-	"crypto/sha256"
-	"log"
-	"encoding/base64"
 	"crypto/rand"
-	"flag"
-	"os"
-	"io/ioutil"
-	"encoding/pem"
+	"crypto/rsa"
+	"crypto/sha1"
+	"crypto/sha256"
 	"crypto/x509"
+	"encoding/base64"
+	"encoding/json"
+	"encoding/pem"
+	"flag"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"time"
+	"ventose.cc/portal/serverold/ctrl"
+	"ventose.cc/tools"
 )
 
 var keyRel string = tools.OSSP + "config" + tools.OSSP + "rsa.key"
@@ -164,7 +164,6 @@ func main() {
 	flag.BoolVar(&verbose, "verbose", false, "Talk a lot!")
 	flag.BoolVar(&verbose, "v", false, "Talk a lot!")
 
-
 	flag.Parse()
 	params := flag.Args()
 
@@ -186,13 +185,12 @@ func main() {
 	}
 
 	switch params[0] {
-	case IsCommandExist(params[0]): {
-		fmt.Printf("%s processed\n", params[0])
-	}
+	case IsCommandExist(params[0]):
+		{
+			fmt.Printf("%s processed\n", params[0])
+		}
 	default:
 		fmt.Printf("%s is no kown Command", params[0])
 	}
-
-
 
 }

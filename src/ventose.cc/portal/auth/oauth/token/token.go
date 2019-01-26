@@ -1,26 +1,27 @@
 package token
 
 import (
-	"hash"
+	"bytes"
 	"crypto/hmac"
-	"ventose.cc/tools"
-	"fmt"
-	"strings"
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/json"
-	"bytes"
 	"errors"
+	"fmt"
+	"hash"
+	"strings"
+	"ventose.cc/tools"
 )
-const(
-	TOKEN_JWT = "JWT"
-	TOKEN_FVT = "FVT"
+
+const (
+	TOKEN_JWT       = "JWT"
+	TOKEN_FVT       = "FVT"
 	ALGORITHM_HS256 = "HS256"
 	ALGORITHM_HS384 = "HS384"
 	ALGORITHM_HS512 = "HS512"
 )
 
-type Token interface{
+type Token interface {
 	GetHeader() *TokenHeader
 	GetPayLoad() TPayLoadInterface
 	String(key []byte) (string, error)
@@ -94,7 +95,6 @@ func VerifyToken(tokenstring string, key []byte) (bool, error) {
 	}
 	return true, nil
 }
-
 
 func getAlgorithem(name string) hash.Hash {
 	switch name {
@@ -190,12 +190,12 @@ func sign(t Token, k []byte) (token []byte, err error) {
 
 /*
 TokenHeader
- */
+*/
 func (h *TokenHeader) ToJson() (bytes []byte, err error) {
 	bytes, err = json.Marshal(h)
 	return
 }
 
-func (h *TokenHeader) GetAlgorithm() hash.Hash{
+func (h *TokenHeader) GetAlgorithm() hash.Hash {
 	return getAlgorithem(h.Algorithm)
 }

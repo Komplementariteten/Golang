@@ -14,12 +14,12 @@ import (
 	"regexp"
 	"time"
 	"ventose.cc/data"
-	"ventose.cc/portal/server"
-	"ventose.cc/portal/server/graceful"
-	"ventose.cc/tools"
 	"ventose.cc/pki"
 	"ventose.cc/portal/config"
+	"ventose.cc/portal/server"
+	"ventose.cc/portal/server/graceful"
 	"ventose.cc/portal/serverold"
+	"ventose.cc/tools"
 )
 
 const (
@@ -40,8 +40,8 @@ type ControllServerConfiguration struct {
 	CtrlServerLogFile    string
 	CtrlServerConfig     string
 	StaticHttpConfig     *serverold.HttpFrontendConfiguration
-	HttpsConfig 	     *config.PortalHttpsConfiguration
-	PkiConfig 	     *pki.PKIConfiguration
+	HttpsConfig          *config.PortalHttpsConfiguration
+	PkiConfig            *pki.PKIConfiguration
 }
 
 type ControllServer struct {

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/lazywei/go-opencv/opencv"
 	"fmt"
+	"github.com/lazywei/go-opencv/opencv"
 	"os"
 )
 
-func main()  {
+func main() {
 	window := opencv.NewWindow("Sample opencv Window")
 	defer window.Destroy()
 
@@ -15,7 +15,6 @@ func main()  {
 		panic("Can't open Camera")
 	}
 	defer cap.Release()
-
 
 	fmt.Println("Press ESC to quit")
 
@@ -45,9 +44,8 @@ func main()  {
 		}
 	}
 
-
 }
 
-func DetectContour(){
+func DetectContour() {
 
 }

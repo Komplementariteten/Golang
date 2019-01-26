@@ -1,23 +1,22 @@
 package storage
 
 import (
-	"fmt"
-	"github.com/boltdb/bolt"
 	"bytes"
 	"encoding/gob"
 	"errors"
+	"fmt"
+	"github.com/boltdb/bolt"
 )
-
 
 type MetaOpperationType uint8
 
 const (
-	METABUCKET_TYPES = "typebucket"
-	MAXSEARCHVALUESIZE = 1024 * 1024 * 8
-	METADESC_FILED = "description"
-	METAFILEDS_FIELD = "fields"
-	METAQUEUESIZE = 128
-	METAOPP_CREATE MetaOpperationType = iota
+	METABUCKET_TYPES                      = "typebucket"
+	MAXSEARCHVALUESIZE                    = 1024 * 1024 * 8
+	METADESC_FILED                        = "description"
+	METAFILEDS_FIELD                      = "fields"
+	METAQUEUESIZE                         = 128
+	METAOPP_CREATE     MetaOpperationType = iota
 	METAOPP_DELETE
 	METAOPP_UPDATE
 	METAOPP_FIELDLIST
@@ -25,7 +24,7 @@ const (
 )
 
 type MetaOpperation struct {
-	Opp MetaOpperationType
+	Opp     MetaOpperationType
 	Payload StorableType
 }
 
@@ -43,7 +42,7 @@ type AddSearchValue interface {
 func (s *Store) handleTypeRegistrations() {
 	s.typeRegistration = make(chan *MetaOpperation, METAQUEUESIZE)
 	for {
-		opp, ok := <- s.typeRegistration
+		opp, ok := <-s.typeRegistration
 		if ok {
 			s.handleMetaAdministration(opp)
 		} else {
@@ -52,7 +51,7 @@ func (s *Store) handleTypeRegistrations() {
 	}
 }
 
-func (s *Store) handleMetaSearch(opp AddSearchValue) (*MetaResponse,error) {
+func (s *Store) handleMetaSearch(opp AddSearchValue) (*MetaResponse, error) {
 
 	if len(opp.Value()) > MAXSEARCHVALUESIZE || len(opp.FieldName()) > MAXSEARCHVALUESIZE || len(opp.Owner()) > MAXSEARCHVALUESIZE || len(opp.TypeName()) > MAXSEARCHVALUESIZE {
 		return nil, errors.New(fmt.Sprintf("%d is to big, searchable values can not extend %d", len(opp.Value()), MAXSEARCHVALUESIZE))

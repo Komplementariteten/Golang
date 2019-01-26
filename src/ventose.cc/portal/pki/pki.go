@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/gob"
@@ -13,7 +14,6 @@ import (
 	"math/big"
 	"time"
 	"ventose.cc/tools"
-	"crypto/tls"
 )
 
 const (
@@ -22,7 +22,6 @@ const (
 	DEFAULT_SYMKEYLEN     = 256
 	CERT_REVOKED          = "Cert has been Revoked"
 )
-
 
 type PKIExport struct {
 	Crt                   []byte
@@ -55,10 +54,9 @@ type PKI struct {
 
 /*
 CertContainer Type
- */
+*/
 
 func (c *CertContainer) ToTls() (tls.Certificate, error) {
-
 
 	certPem := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: c.Crt})
 	keyPem := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: c.PlainKey()})
@@ -145,7 +143,7 @@ func (c *CertContainer) GetX509Cert() (*x509.Certificate, error) {
 
 /*
 PKI Type
- */
+*/
 
 func (p *PKI) IsRevoked(cert *x509.Certificate) bool {
 	for i := 0; i < len(p.Revoked); i++ {
@@ -462,14 +460,14 @@ func getCertTamplate() x509.Certificate {
 	notBefore := time.Now()
 	notAfter := notBefore.AddDate(DEFAULT_CERT_VALIDITY, 0, 0)
 	certTemplate := x509.Certificate{
-		SerialNumber:          tools.GetSerial(),
-		Subject:               pkix.Name{},
-		NotBefore:             notBefore,
-		NotAfter:              notAfter,
-		SubjectKeyId:          keyID,
-		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageDataEncipherment | x509.KeyUsageContentCommitment | x509.KeyUsageKeyAgreement,
-		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageAny},
-		BasicConstraintsValid: true,
+		SerialNumber:                tools.GetSerial(),
+		Subject:                     pkix.Name{},
+		NotBefore:                   notBefore,
+		NotAfter:                    notAfter,
+		SubjectKeyId:                keyID,
+		KeyUsage:                    x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageDataEncipherment | x509.KeyUsageContentCommitment | x509.KeyUsageKeyAgreement,
+		ExtKeyUsage:                 []x509.ExtKeyUsage{x509.ExtKeyUsageAny},
+		BasicConstraintsValid:       true,
 		IsCA:                        false,
 		SignatureAlgorithm:          x509.SHA256WithRSA,
 		PermittedDNSDomainsCritical: true,
@@ -508,9 +506,9 @@ func getRootCaTamplate(organisationName string) x509.Certificate {
 		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign | x509.KeyUsageCRLSign,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		BasicConstraintsValid: true,
-		IsCA:               true,
-		SignatureAlgorithm: x509.SHA256WithRSA,
-		MaxPathLen:         5,
+		IsCA:                  true,
+		SignatureAlgorithm:    x509.SHA256WithRSA,
+		MaxPathLen:            5,
 		/*DNSNames: []string{"*.ventose.cc", "www.ventose.cc","ventose.cc"},
 		PermittedDNSDomainsCritical: true,
 		PermittedDNSDomains: []string { "ventose.cc"},*/

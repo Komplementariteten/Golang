@@ -13,22 +13,22 @@ const (
 )
 
 type Response struct {
-	Type		   ResponseType
-	StatusCode	   int
-	StatusText 	   string
+	Type               ResponseType
+	StatusCode         int
+	StatusText         string
 	ErrorStatusCode    int
-	URL		   string
-	Headers		   http.Header
-	IsError 	   bool
-	ErrorId 	   string
+	URL                string
+	Headers            http.Header
+	IsError            bool
+	ErrorId            string
 	InternalError      error
 	RedirectInFragment bool
-	Output 		   ResponseData
+	Output             ResponseData
 }
 
 func NewResponse() *Response {
 	r := &Response{
-		Type:	         DATA,
+		Type:            DATA,
 		StatusCode:      200,
 		ErrorStatusCode: 200,
 		Headers:         make(http.Header),
@@ -60,7 +60,7 @@ func (r *Response) SetErrorState(id string, description string, state string) {
 
 }
 
-func(r *Response) SetErrorUri(id string, description string, uri string, state string) {
+func (r *Response) SetErrorUri(id string, description string, uri string, state string) {
 
 	r.IsError = true
 	r.ErrorId = id

@@ -2,10 +2,10 @@ package pki
 
 import (
 	"crypto/x509"
-	"ventose.cc/data"
-	"ventose.cc/pki/export"
 	"crypto/x509/pkix"
 	"fmt"
+	"ventose.cc/data"
+	"ventose.cc/pki/export"
 )
 
 type CertRequest struct {
@@ -19,24 +19,24 @@ type CertRequest struct {
 }
 
 type CA struct {
-	Organisation 		string
-	DefaultCertValidYears	int
-	Id			[]byte
-	Cert			*export.Cert
-	Key			*export.Key
-	IntermediatePool	*x509.CertPool
-	Revoked			*pkix.CertificateList
-	storage			*data.StorageConnection
+	Organisation          string
+	DefaultCertValidYears int
+	Id                    []byte
+	Cert                  *export.Cert
+	Key                   *export.Key
+	IntermediatePool      *x509.CertPool
+	Revoked               *pkix.CertificateList
+	storage               *data.StorageConnection
 }
 
 //Private Methods
-func loadCACert(id []byte, con *data.StorageConnection) (*export.Cert, error){
+func loadCACert(id []byte, con *data.StorageConnection) (*export.Cert, error) {
 	req := new(data.StorageRequest)
 	req.Type = data.ReadRequest
 	req.Element = id
 	req.Content = new(export.Cert)
 	con.RequestChannel <- req
-	resp := <- con.ResponseChannel
+	resp := <-con.ResponseChannel
 	if resp.Error != nil {
 		return nil, fmt.Errorf("Failed to load CA Cert with: %v", resp.Error)
 	}
@@ -46,13 +46,13 @@ func loadCACert(id []byte, con *data.StorageConnection) (*export.Cert, error){
 	return nil, fmt.Errorf("Failed to Convert CA Cert Request to export.Cert")
 }
 
-func loadCAExport(id []byte, con *data.StorageConnection) (*export.CAExport, error){
+func loadCAExport(id []byte, con *data.StorageConnection) (*export.CAExport, error) {
 	req := new(data.StorageRequest)
 	req.Type = data.ReadRequest
 	req.Element = id
 	req.Content = new(export.CAExport)
 	con.RequestChannel <- req
-	resp := <- con.ResponseChannel
+	resp := <-con.ResponseChannel
 	if resp.Error != nil {
 		return nil, fmt.Errorf("Failed to load CA Export with: %v", resp.Error)
 	}
@@ -63,13 +63,13 @@ func loadCAExport(id []byte, con *data.StorageConnection) (*export.CAExport, err
 
 }
 
-func loadKeyExport(id []byte, con *data.StorageConnection) (*export.Key, error){
+func loadKeyExport(id []byte, con *data.StorageConnection) (*export.Key, error) {
 	req := new(data.StorageRequest)
 	req.Type = data.ReadRequest
 	req.Element = id
 	req.Content = new(export.Key)
 	con.RequestChannel <- req
-	resp := <- con.ResponseChannel
+	resp := <-con.ResponseChannel
 	if resp.Error != nil {
 		return nil, fmt.Errorf("Failed to load Key Export with: %v", resp.Error)
 	}
@@ -107,12 +107,9 @@ func LoadFromStorage(id []byte, con *data.StorageConnection) (*CA, error) {
 	}
 	ca.Key = key
 
-
 	return ca, nil
 }
 
 func (ca *CA) ConnectStorage(con *data.StorageConnection) {
 	ca.storage = con
 }
-
-

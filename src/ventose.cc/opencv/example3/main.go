@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/lazywei/go-opencv/opencv"
 	"fmt"
+	"github.com/lazywei/go-opencv/opencv"
 )
 
 func main() {
@@ -14,7 +14,6 @@ func main() {
 		panic("Can't open Camera")
 	}
 	defer cap.Release()
-
 
 	fmt.Println("Press ESC to quit")
 

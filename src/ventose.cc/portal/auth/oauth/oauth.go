@@ -1,34 +1,34 @@
 package oauth
 
 import (
-	"fmt"
-	"net/http"
-	"strings"
-	"ventose.cc/tools"
+	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/binary"
-	"crypto/hmac"
-	"strconv"
-	"ventose.cc/auth/oauth/token"
 	"errors"
-	"time"
+	"fmt"
 	"github.com/cupcake/rdb/nopdecoder"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
+	"ventose.cc/auth/oauth/token"
+	"ventose.cc/tools"
 )
 
-const AUTH_PATH 	= "/auth/"
-const TOKEN_PATH 	= "/token"
-const REDIRECT_PATH 	= "/redirect"
-const REQUESTIDSIZE	= 32
-const SESSIONLIFETIME   = 5
+const AUTH_PATH = "/auth/"
+const TOKEN_PATH = "/token"
+const REDIRECT_PATH = "/redirect"
+const REQUESTIDSIZE = 32
+const SESSIONLIFETIME = 5
 
 type OAuth struct {
-	AuthEndpoint 		*AuthorizationEndpoint
-	TokenEndpoint 		*TokenEndpoint
-	RedirectEndpoint	*RedirectEndpoint
-	Clients map[string]*Client
+	AuthEndpoint     *AuthorizationEndpoint
+	TokenEndpoint    *TokenEndpoint
+	RedirectEndpoint *RedirectEndpoint
+	Clients          map[string]*Client
 	http.Handler
 	Initialized bool
-	Store *Store
+	Store       *Store
 	sessionName string
 }
 
@@ -93,7 +93,7 @@ func (s *OAuth) updateEndpointRequestFromFVT(er *Session, tokenString string) (*
 	return er, nil
 }
 
-func (s *OAuth) getEndpointRequest(w http.ResponseWriter, r *http.Request) ( *Session, error) {
+func (s *OAuth) getEndpointRequest(w http.ResponseWriter, r *http.Request) (*Session, error) {
 	err := r.ParseForm()
 	if err != nil {
 		return nil, err
@@ -111,7 +111,7 @@ func (s *OAuth) getEndpointRequest(w http.ResponseWriter, r *http.Request) ( *Se
 		er.State = r.Form.Get("state")
 		er.RequestFailes = 0
 		er.RequestId = tools.GetRandomAsciiString(REQUESTIDSIZE)
-	} else if sc == nil &&  r.Method == http.MethodPost {
+	} else if sc == nil && r.Method == http.MethodPost {
 		er, err = s.Store.GetSession(sc.Value)
 		if err != nil {
 			return nil, err
@@ -157,10 +157,10 @@ func (s *OAuth) getEndpointRequest(w http.ResponseWriter, r *http.Request) ( *Se
 	return er, nil
 }
 
-func (s OAuth) ServeHTTP(w http.ResponseWriter, r *http.Request){
+func (s OAuth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	er, err := s.getEndpointRequest(w, r)
 	if err != nil {
-		http.Error(w, "Failed to Parse Request with " + err.Error(), 420)
+		http.Error(w, "Failed to Parse Request with "+err.Error(), 420)
 		return
 	}
 	client, err := s.ResolveClient(er.ClientId)
@@ -169,12 +169,12 @@ func (s OAuth) ServeHTTP(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	if client == nil {
-		http.NotFound(w,r)
+		http.NotFound(w, r)
 	}
 
-	if strings.Contains(r.RequestURI, AUTH_PATH){
+	if strings.Contains(r.RequestURI, AUTH_PATH) {
 		s.AuthEndpoint.Handle(w, r, er, client)
-	} else if strings.Contains(r.RequestURI, TOKEN_PATH){
+	} else if strings.Contains(r.RequestURI, TOKEN_PATH) {
 		s.TokenEndpoint.Handle(w, r)
 	} else if strings.Contains(r.RequestURI, REDIRECT_PATH) {
 		s.RedirectEndpoint.Handle(w, r)

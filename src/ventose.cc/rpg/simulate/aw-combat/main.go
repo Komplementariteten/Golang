@@ -1,24 +1,24 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
-	"fmt"
 )
 
 var (
-	basepool int = 8
-	pairs = []int{5,4,3,3,3,2,2,1}
-	offpool int = 0
-	devpool int = 0
-	a_hit int = 0
-	wins int = 0
-	average_hits map[int]float64
-	av_off float64 = 0
-	av_def float64 = 0
-	near = 0
-	carry_over = 0
-	carry_overHit = 0
+	basepool      int = 8
+	pairs             = []int{5, 4, 3, 3, 3, 2, 2, 1}
+	offpool       int = 0
+	devpool       int = 0
+	a_hit         int = 0
+	wins          int = 0
+	average_hits  map[int]float64
+	av_off        float64 = 0
+	av_def        float64 = 0
+	near                  = 0
+	carry_over            = 0
+	carry_overHit         = 0
 )
 
 func r() int {
@@ -34,7 +34,7 @@ func roll(dice int, diff int) (int, string) {
 		if r() >= diff {
 			successes++
 			m = m + "1"
-		}else {
+		} else {
 			m = m + "0"
 		}
 	}
@@ -54,13 +54,13 @@ func damage(hits int) int {
 	v := 10 - hits
 	if v > 0 {
 		return rand.Intn(v) + hits
-	}else {
+	} else {
 		return 15
 	}
 }
 
 func maneuver(hits int, def int, th int) int {
-	if hits + 1 > def {
+	if hits+1 > def {
 		near++
 		return 5
 	}
@@ -87,7 +87,7 @@ func main() {
 		wins = 0
 		deffsum = 0
 		offsum = 0
-		for p:= 0; p < 200; p++ {
+		for p := 0; p < 200; p++ {
 			updatePools()
 			for i := 0; i < 1000; i++ {
 				a, _ := roll(offpool, defvalue)
@@ -97,7 +97,7 @@ func main() {
 					a_hit = a_hit + a
 				} else {
 					a = a - devpool
-					a = maneuver(a_hit + a, devpool, defvalue)
+					a = maneuver(a_hit+a, devpool, defvalue)
 					if a > 0 {
 						a_hit = a_hit + a
 					}

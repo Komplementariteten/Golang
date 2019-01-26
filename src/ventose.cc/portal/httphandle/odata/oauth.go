@@ -1,31 +1,31 @@
 package oauth
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
+	"html/template"
 	"net/http"
 	"ventose.cc/auth"
-	"crypto/rsa"
-	"crypto/rand"
 	"ventose.cc/data"
-	"html/template"
 )
 
 type Token struct {
-	access_token 	string
-	token_type 	string
-	expires_in 	int
-	refresh_token 	string
+	access_token  string
+	token_type    string
+	expires_in    int
+	refresh_token string
 }
 
 type LoginTemplate struct {
-	Prefix 			string
-	LoginUrl 		string
-	LoginTitle 		string
-	PasswordTitle		string
-	ValidationTokenName 	string
-	ValidationToken		string
-	ChallengeResponse	string
-	SubmitBtnName		string
-	ResetBtnName		string
+	Prefix              string
+	LoginUrl            string
+	LoginTitle          string
+	PasswordTitle       string
+	ValidationTokenName string
+	ValidationToken     string
+	ChallengeResponse   string
+	SubmitBtnName       string
+	ResetBtnName        string
 }
 
 const loginForm = `<div class="{{.Prefix}}_loginForm">
@@ -54,26 +54,26 @@ const tokenName = "__validationtoken"
 var authFrontend *auth.Consumer
 var templateData *LoginTemplate
 var t *template.Template
+
 func init() {
 	authFrontend = new(auth.Consumer)
 	authFrontend.Description = "OAuth"
 	authFrontend.Key, _ = rsa.GenerateKey(rand.Reader, 2048)
-	templateData 			= new(LoginTemplate)
-	templateData.LoginTitle 	= "Login"
-	templateData.PasswordTitle 	= "Password"
-	templateData.ResetBtnName 	= "Reset"
-	templateData.SubmitBtnName 	= "Login"
+	templateData = new(LoginTemplate)
+	templateData.LoginTitle = "Login"
+	templateData.PasswordTitle = "Password"
+	templateData.ResetBtnName = "Reset"
+	templateData.SubmitBtnName = "Login"
 	templateData.ValidationTokenName = tokenName
 	t := template.New("Login Template")
 	t, _ = t.Parse(loginForm)
 }
 
-
 func Authorize(path string, ab *auth.AuthBackend, s *data.StorageConnection) http.HandlerFunc {
 	ab.AddFrontend(authFrontend)
 	templateData.Prefix = path
 	templateData.LoginUrl = path
-	return func(w http.ResponseWriter, r *http.Request){
+	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			t.Execute(w, templateData)
 		}

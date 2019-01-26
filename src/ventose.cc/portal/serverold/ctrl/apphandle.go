@@ -2,13 +2,13 @@ package ctrl
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 	"ventose.cc/data"
-	"ventose.cc/tools"
-	"ventose.cc/portal/server"
-	"fmt"
 	"ventose.cc/portal/config"
+	"ventose.cc/portal/server"
+	"ventose.cc/tools"
 )
 
 type AppHandle struct {
@@ -17,13 +17,13 @@ type AppHandle struct {
 }
 
 type StatusResponse struct {
-	ListenPort	uint
-	CfgPath		string
-	KeyPath		string
-	CtrlRunning 	bool
-	HttpRunning 	bool
-	AuthRunning 	bool
-	PortalRunning 	bool
+	ListenPort    uint
+	CfgPath       string
+	KeyPath       string
+	CtrlRunning   bool
+	HttpRunning   bool
+	AuthRunning   bool
+	PortalRunning bool
 }
 
 func getStorageConfigFromParameter(w http.ResponseWriter, r *Request) (*data.InitialConfiguration, error) {
@@ -71,9 +71,9 @@ func (h *AppHandle) HandlePortalState(r *Request, w http.ResponseWriter) {
 		SetupHeader(w)
 	case "status":
 		var state StatusResponse
-		state.ListenPort  = this.Cfg.ListenPort
-		state.KeyPath	  = this.Cfg.ServerKeyPath
-		state.CfgPath	  = this.Cfg.CtrlServerConfig
+		state.ListenPort = this.Cfg.ListenPort
+		state.KeyPath = this.Cfg.ServerKeyPath
+		state.CfgPath = this.Cfg.CtrlServerConfig
 		state.HttpRunning = this.Portal.StaticHttpOnline
 		if this.Portal != nil && this.Portal.StorageOnline {
 			state.PortalRunning = true
@@ -88,8 +88,8 @@ func (h *AppHandle) HandlePortalState(r *Request, w http.ResponseWriter) {
 		w.Write(jbytes)
 		SetupHeader(w)
 	case "start":
-		defer func(){
-			if r := recover(); r!= nil {
+		defer func() {
+			if r := recover(); r != nil {
 				fmt.Println("Recover ", r)
 			}
 		}()
@@ -100,7 +100,7 @@ func (h *AppHandle) HandlePortalState(r *Request, w http.ResponseWriter) {
 				http.Error(w, "Failed to start Storage on new Portal!", http.StatusInternalServerError)
 			}
 			h.StartPortalParts()
-		} else if ! this.Portal.StorageOnline {
+		} else if !this.Portal.StorageOnline {
 			err := this.Portal.LoadStorage(this.Cfg.StorageConfiguration)
 			if err != nil {
 				http.Error(w, "Failed to Load Storage!", http.StatusInternalServerError)

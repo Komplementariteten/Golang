@@ -5,10 +5,10 @@ import (
 )
 
 const (
-	WIDTH = 512
-	HEIGHT = 512
+	WIDTH            = 512
+	HEIGHT           = 512
 	NTRAINING_SAMPLE = 100
-	FRAC_LINEAR_SEP = 0.9
+	FRAC_LINEAR_SEP  = 0.9
 )
 
 func main() {
@@ -18,8 +18,8 @@ func main() {
 
 	// -- Train Data ---
 	opencv.M
-	trainData := opencv.CreateMat(2 * NTRAINING_SAMPLE, 2, opencv.CV_32F)
-	labels := opencv.CreateMat(2 * NTRAINING_SAMPLE, 1, opencv.CV_32F)
+	trainData := opencv.CreateMat(2*NTRAINING_SAMPLE, 2, opencv.CV_32F)
+	labels := opencv.CreateMat(2*NTRAINING_SAMPLE, 1, opencv.CV_32F)
 
 	rng := opencv.RNG(100)
 
@@ -27,4 +27,3 @@ func main() {
 
 	trainClass := trainData.GetRows()
 }
-

@@ -1,18 +1,18 @@
 package ctrl
 
 import (
-	"net"
-	"fmt"
-	"time"
 	"encoding/gob"
+	"fmt"
 	"io"
+	"net"
+	"time"
 )
 
-type CtrlFunction func (m Message) string
+type CtrlFunction func(m Message) string
 
 type CtrlServer struct {
 	Connection net.Listener
-	Commands map[string]CtrlFunction
+	Commands   map[string]CtrlFunction
 }
 
 type CtrlConfiguration struct {
@@ -20,10 +20,10 @@ type CtrlConfiguration struct {
 }
 
 type Message struct {
-	Command string
+	Command  string
 	Signatur string
-	Text interface{}
-	Time time.Time
+	Text     interface{}
+	Time     time.Time
 }
 
 func NewConnection(cf *CtrlConfiguration) (*CtrlServer, error) {
@@ -65,6 +65,6 @@ func (c *CtrlServer) handle(conn net.Conn) {
 	}
 }
 
-func (c *CtrlServer) error(e error){
+func (c *CtrlServer) error(e error) {
 	panic(e.Error())
 }

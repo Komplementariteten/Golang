@@ -14,29 +14,27 @@ const (
 	QUERYTYPE_ADD
 	QUERYTYPE_DELETE
 	MINBUCKETNAME_SIZE = 1
-	MINKEY_SIZE = 32
+	MINKEY_SIZE        = 32
 )
-
 
 var packageList map[string]*Store
 
 type Document struct {
-	Key []byte
+	Key     []byte
 	Payload StorableType
 }
 
 type Query struct {
-	Bucket string
-	Type QueryType
+	Bucket  string
+	Type    QueryType
 	Content *Document
 }
 
 type Response struct {
 	Error error
-	Data []byte
-	Key []byte
+	Data  []byte
+	Key   []byte
 }
-
 
 func updateDocument(bucket *bolt.Bucket, d *Document) (r *Response, err error) {
 
@@ -142,7 +140,6 @@ func (s *Store) handleStorageOpperation(query *Query) (response *Response, e err
 			}
 		})
 	}
-
 
 	return
 }

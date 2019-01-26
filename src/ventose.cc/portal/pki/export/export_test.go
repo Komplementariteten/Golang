@@ -1,10 +1,10 @@
 package export
 
 import (
-	"os"
-	"ventose.cc/data"
-	"testing"
 	"crypto/x509"
+	"os"
+	"testing"
+	"ventose.cc/data"
 )
 
 const (
@@ -26,9 +26,7 @@ func TestTest(t *testing.T) {
 	t.Log("test")
 }
 
-
-
-func TestExportCert(t *testing.T){
+func TestExportCert(t *testing.T) {
 
 	ccfg := GetTestCfg()
 	d, err := data.OpenStorage(ccfg)
@@ -42,7 +40,7 @@ func TestExportCert(t *testing.T){
 
 	cert := &x509.Certificate{
 		EmailAddresses: []string{"osiegemund@gmail.com"},
-		IsCA: true,
+		IsCA:           true,
 	}
 	c := new(Cert)
 	c.Data = *cert
@@ -52,7 +50,7 @@ func TestExportCert(t *testing.T){
 	req.Type = data.CreateRequest
 
 	con.RequestChannel <- *req
-	resp := <- con.ResponseChannel
+	resp := <-con.ResponseChannel
 
 	if resp.Error != nil {
 		t.Fatal(resp.Error)
@@ -64,12 +62,11 @@ func TestExportCert(t *testing.T){
 	req.Type = data.ReadRequest
 
 	con.RequestChannel <- *req
-	resp = <- con.ResponseChannel
+	resp = <-con.ResponseChannel
 
 	if resp.Error != nil {
 		t.Fatalf("Failed to Read Cert %v", resp.Error)
 	}
-
 
 	if cer, ok := resp.Content.(*Cert); !ok && !cer.Data.IsCA {
 		t.Fatal("Failed to retrive correct Cert %v:%v", ok, resp.Content.(*Cert))

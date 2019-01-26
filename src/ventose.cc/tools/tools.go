@@ -2,20 +2,20 @@ package tools
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
+	"github.com/siddontang/go/bson"
 	"io/ioutil"
+	"log"
+	"math"
 	"math/big"
 	"os"
-	"strings"
-	"encoding/base64"
-	"github.com/siddontang/go/bson"
 	"strconv"
-	"math"
-	"bytes"
-	"log"
+	"strings"
 )
 
 const (
@@ -28,13 +28,13 @@ const (
 	letterBytes    = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	OSSP           = string(os.PathSeparator)
 )
-var Base64Encode = base64.RawURLEncoding
 
+var Base64Encode = base64.RawURLEncoding
 
 func GetRandomAsciiString(size int) string {
 	bytes := GetRandomBytes(size)
-	for i, b := range  bytes {
-		bytes[i] = letterBytes[b % byte(len(letterBytes))]
+	for i, b := range bytes {
+		bytes[i] = letterBytes[b%byte(len(letterBytes))]
 	}
 	return string(bytes)
 }
@@ -72,7 +72,6 @@ func Itob(v int) []byte {
 	binary.BigEndian.PutUint64(b, uint64(v))
 	return b
 }
-
 
 func Decode(b []byte, v interface{}) {
 	typeFlag := b[0]
@@ -169,7 +168,6 @@ func ToBytes(t interface{}) []byte {
 	}
 	return nil
 }
-
 
 func LoadFromJsonFile(path string, t interface{}) error {
 	data, err := ioutil.ReadFile(path)

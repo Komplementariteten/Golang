@@ -1,10 +1,10 @@
 package storage
 
 import (
-	"testing"
-	"ventose.cc/tools"
 	"github.com/boltdb/bolt"
 	"os"
+	"testing"
+	"ventose.cc/tools"
 )
 
 type MyStorableType struct {
@@ -22,7 +22,7 @@ func (m *MyStorableType) Serialize() []byte {
 }
 
 func (m *MyStorableType) Fields() []string {
-	names := []string {"abc", "def", "ghi", "jkl"}
+	names := []string{"abc", "def", "ghi", "jkl"}
 	return names
 }
 
@@ -36,11 +36,11 @@ func GetTestDbParams() *StoreParameter {
 
 func TestBucketExists(t *testing.T) {
 	dbfile := "testbe.db"
-	db, err := bolt.Open(dbfile, 0600 , nil )
+	db, err := bolt.Open(dbfile, 0600, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer func (db *bolt.DB) {
+	defer func(db *bolt.DB) {
 		db.Close()
 		os.Remove(dbfile)
 	}(db)
@@ -66,7 +66,7 @@ func TestStorehandleMetaAdministration(t *testing.T) {
 	tt := &MyStorableType{}
 	tt.myname = []byte("myname")
 
-	opp := &MetaOpperation{ Payload: tt, Opp: METAOPP_CREATE}
+	opp := &MetaOpperation{Payload: tt, Opp: METAOPP_CREATE}
 	_, err = s.handleMetaAdministration(opp)
 	if err != nil {
 		t.Fatal(err)
@@ -85,7 +85,7 @@ func TestNewStore(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer func () {
+	defer func() {
 		os.Remove(p.DbFilePath)
 	}()
 	s.Close()

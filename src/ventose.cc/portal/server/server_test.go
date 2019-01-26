@@ -1,28 +1,28 @@
 package server
 
 import (
-	"testing"
-	"ventose.cc/portal/config"
 	"encoding/json"
 	"io/ioutil"
+	"testing"
 	"ventose.cc/data"
+	"ventose.cc/portal/config"
 	"ventose.cc/tools"
 )
 
 func createConfigT(t *testing.T) string {
 	cfg := &config.PortalConfig{
 		Contact: &config.PortalContact{
-			Email: 		"osiegemund@gmail.com",
-			Country: 	"World",
-			City:		"Moon",
+			Email:   "osiegemund@gmail.com",
+			Country: "World",
+			City:    "Moon",
 		},
 		ConfigurationFile: "/tmp/test.cfg",
-		Organisation: "Ventose Test",
+		Organisation:      "Ventose Test",
 		DB: &data.InitialConfiguration{
-			ConfigPath: "/tmp/db.cfg",
-			DbPath: "/tmp/db",
-			MaxDatabases: 12,
-			AuthKey: tools.GetRandomAsciiString(15),
+			ConfigPath:     "/tmp/db.cfg",
+			DbPath:         "/tmp/db",
+			MaxDatabases:   12,
+			AuthKey:        tools.GetRandomAsciiString(15),
 			PathAccessMode: 0770,
 		},
 	}
@@ -30,35 +30,34 @@ func createConfigT(t *testing.T) string {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ioutil.WriteFile(cfg.ConfigurationFile ,b, 0666)
+	ioutil.WriteFile(cfg.ConfigurationFile, b, 0666)
 	return cfg.ConfigurationFile
 }
 
 func createConfigB(t *testing.B) string {
 	cfg := &config.PortalConfig{
 		Contact: &config.PortalContact{
-			Email: 		"osiegemund@gmail.com",
-			Country: 	"World",
-			City:		"Moon",
+			Email:   "osiegemund@gmail.com",
+			Country: "World",
+			City:    "Moon",
 		},
 		DB: &data.InitialConfiguration{
-			ConfigPath: "/tmp/db.cfg",
-			DbPath: "/tmp/db",
-			MaxDatabases: 12,
-			AuthKey: tools.GetRandomAsciiString(15),
+			ConfigPath:     "/tmp/db.cfg",
+			DbPath:         "/tmp/db",
+			MaxDatabases:   12,
+			AuthKey:        tools.GetRandomAsciiString(15),
 			PathAccessMode: 0770,
 		},
 		ConfigurationFile: "/tmp/test.cfg",
-		Organisation: "Ventose Test",
+		Organisation:      "Ventose Test",
 	}
 	b, err := json.Marshal(cfg)
 	if err != nil {
 		t.Fatal(err)
 	}
-	ioutil.WriteFile(cfg.ConfigurationFile ,b, 0666)
+	ioutil.WriteFile(cfg.ConfigurationFile, b, 0666)
 	return cfg.ConfigurationFile
 }
-
 
 func BenchmarkStartPortal(b *testing.B) {
 	cfgFile := createConfigB(b)

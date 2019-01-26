@@ -1,12 +1,12 @@
 package main
 
 import (
-	"net/http"
-	"ventose.cc/auth/oauth"
 	"fmt"
+	"log"
+	"net/http"
 	"os"
 	"path/filepath"
-	"log"
+	"ventose.cc/auth/oauth"
 	"ventose.cc/tools"
 )
 
@@ -36,7 +36,4 @@ func main() {
 	http.Handle("/oauth/", handle)
 	http.ListenAndServe(":3030", nil)
 
-
 }
-
-

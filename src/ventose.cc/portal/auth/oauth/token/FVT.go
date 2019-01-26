@@ -1,26 +1,28 @@
 package token
 
 import (
-	"time"
 	"encoding/json"
-	"fmt"
 	"errors"
+	"fmt"
+	"time"
 	"ventose.cc/tools"
 )
+
 const TOKENLIVETIME = 960
+
 type FVT struct {
 	Token
-	Header *TokenHeader
+	Header  *TokenHeader
 	Payload TPayLoadInterface
 }
 
 type FVTPayLoad struct {
-	ClientId string `json:"rqi"`
-	State string `json:"stt"`
-	ExpirationTime int `json:"exp"`
-	NotBefore int `json:"nbf"`
-	IssuedAt int `json:"iat"`
-	CSRFToken string `json:"cft"`
+	ClientId       string `json:"rqi"`
+	State          string `json:"stt"`
+	ExpirationTime int    `json:"exp"`
+	NotBefore      int    `json:"nbf"`
+	IssuedAt       int    `json:"iat"`
+	CSRFToken      string `json:"cft"`
 	TPayLoadInterface
 }
 
@@ -40,15 +42,16 @@ func NewFvtTokenData(req string, state string, CSRFToken string, issuedAt int) *
 	p.IssuedAt = issuedAt
 	return p
 }
+
 /*
 FVT
- */
+*/
 
-func (t *FVT) SetPayLoad(p TPayLoadInterface) error{
+func (t *FVT) SetPayLoad(p TPayLoadInterface) error {
 
 	fvtp, ok := p.(*FVTPayLoad)
 	if ok {
-		if len(fvtp.CSRFToken) < 5  {
+		if len(fvtp.CSRFToken) < 5 {
 			return errors.New("CSRFToken not set")
 		}
 		if len(fvtp.ClientId) < 2 {
@@ -82,7 +85,7 @@ func (t *FVT) GetPayLoad() TPayLoadInterface {
 	t.Payload = &JWTPayLoad{}
 	return t.Payload
 }
-func (t *FVT) String(k []byte)(token string, err error) {
+func (t *FVT) String(k []byte) (token string, err error) {
 	return stringify(t, k)
 }
 
@@ -124,10 +127,11 @@ func (t *FVT) LoadPayLoad(b64 string) error {
 func (t *FVT) LoadHeader(header *TokenHeader) {
 	t.Header = header
 }
+
 /*
 JSWTPayload
- */
-func (p *FVTPayLoad)ToJson()(bytes []byte, err error) {
+*/
+func (p *FVTPayLoad) ToJson() (bytes []byte, err error) {
 	bytes, err = json.Marshal(p)
 	return
 }

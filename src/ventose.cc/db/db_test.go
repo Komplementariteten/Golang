@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"bytes"
@@ -143,51 +143,6 @@ func TestNewClient(t *testing.T) {
 
 }
 
-/* func TestConnectToStorage(t *testing.T) {
-	// Should Fail without new Storage
-	defer func() {
-		t.Log("recovering from panic")
-		recover()
-	}()
-	c := make(chan *Query)
-	ConnectToStorage(c)
-
-	cfg := &DbConfiguration{}
-	cfg.Mode = 0660
-	cfg.Path = "./test2.db"
-	s, err := NewStorage(cfg)
-	if err != nil {
-		t.Fatal(err)
-	}
-	s.Serve()
-	defer func () {
-		os.Remove(cfg.Path)
-		s.Close()
-	} ()
-	r := ConnectToStorage(c)
-	if r == nil {
-		t.Fatal("Connect To Storage returend no response Channel")
-	}
-	d := &TestDocument{}
-	rs := tools.GetRandomAsciiString(12)
-	doc := &Document{}
-	doc.Value = d
-	doc.TypeName = "TestDocument"
-	d.TestString = rs
-
-	q := &Query{}
-	q.Payload = doc
-	q.Type = WRITE
-	q.DataType = doc.TypeName
-
-	c <- q
-	resp := <- r
-	if resp.Error != nil {
-		t.Fatal(resp.Error)
-	}
-	close(c)
-}*/
-
 func TestStorageRawReadWrite(t *testing.T) {
 	cfg := &DbConfiguration{}
 	cfg.Mode = 0660
@@ -222,7 +177,7 @@ func TestStorageRawReadWrite(t *testing.T) {
 	if r2.Status == ERROR {
 		t.Fatal(r2.Error)
 	}
-	t.Logf("%t(%v)", r2, r2)
+	t.Logf("%T(%v)", r2, r2)
 }
 
 func TestNewStorage(t *testing.T) {

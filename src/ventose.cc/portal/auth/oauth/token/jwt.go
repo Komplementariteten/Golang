@@ -2,33 +2,32 @@ package token
 
 import (
 	"encoding/json"
-	"time"
 	"errors"
+	"time"
 	"ventose.cc/tools"
 )
 
-
 type JWT struct {
 	Token
-	Header *TokenHeader
-	Payload TPayLoadInterface
+	Header    *TokenHeader
+	Payload   TPayLoadInterface
 	signature []byte
 }
 
 type JWTPayLoad struct {
-	Issuer string `json:"iss"`
-	Subject string `json:"sub"`
-	Audience string `json:"aud"`
-	ExpirationTime int `json:"exp"`
-	NotBefore int `json:"nbf"`
-	IssuedAt int `json:"iat"`
-	JWTId string `json:"jti"`
+	Issuer         string `json:"iss"`
+	Subject        string `json:"sub"`
+	Audience       string `json:"aud"`
+	ExpirationTime int    `json:"exp"`
+	NotBefore      int    `json:"nbf"`
+	IssuedAt       int    `json:"iat"`
+	JWTId          string `json:"jti"`
 	TPayLoadInterface
 }
 
 /*
 JWT
- */
+*/
 func newJWT() *JWT {
 	token := &JWT{}
 	token.Header = &TokenHeader{}
@@ -37,7 +36,7 @@ func newJWT() *JWT {
 	return token
 }
 
-func (t *JWT) SetPayLoad(p TPayLoadInterface) error{
+func (t *JWT) SetPayLoad(p TPayLoadInterface) error {
 
 	jwtp, ok := p.(*JWTPayLoad)
 	if ok {
@@ -66,7 +65,7 @@ func (t *JWT) GetPayLoad() TPayLoadInterface {
 	t.Payload = &JWTPayLoad{}
 	return t.Payload
 }
-func (t *JWT) String(k []byte)(token string, err error) {
+func (t *JWT) String(k []byte) (token string, err error) {
 	return stringify(t, k)
 }
 
@@ -107,10 +106,11 @@ func (t *JWT) LoadPayLoad(b64 string) error {
 func (t *JWT) LoadHeader(header *TokenHeader) {
 	t.Header = header
 }
+
 /*
 JSWTPayload
- */
-func (p *JWTPayLoad)ToJson()(bytes []byte, err error) {
+*/
+func (p *JWTPayLoad) ToJson() (bytes []byte, err error) {
 	bytes, err = json.Marshal(p)
 	return
 }

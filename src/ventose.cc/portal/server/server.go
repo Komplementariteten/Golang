@@ -1,37 +1,37 @@
 package server
 
 import (
-	"ventose.cc/pki"
-	"sync"
-	"ventose.cc/https"
-	"ventose.cc/data"
-	"ventose.cc/pki/certstore"
-	"ventose.cc/portal/config"
-	"os"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"encoding/json"
+	"os"
+	"sync"
+	"ventose.cc/data"
+	"ventose.cc/https"
+	"ventose.cc/pki"
+	"ventose.cc/pki/certstore"
+	"ventose.cc/portal/config"
 	"ventose.cc/tools"
 )
 
 type PortalServer struct {
-	storage       		*data.DataStorage
-	certstore     		*certstore.CertStore
-	pki 	      		*pki.PKI
-	StorageWaiter 		sync.WaitGroup
-	https	      		*https.HttpsFrontend
-	S 	      		*config.PortalConfig
-	StorageOnline 		bool
-	PkiOnline     		bool
-	StaticHttpOnline 	bool
-	HttpsOnline 		bool
+	storage          *data.DataStorage
+	certstore        *certstore.CertStore
+	pki              *pki.PKI
+	StorageWaiter    sync.WaitGroup
+	https            *https.HttpsFrontend
+	S                *config.PortalConfig
+	StorageOnline    bool
+	PkiOnline        bool
+	StaticHttpOnline bool
+	HttpsOnline      bool
 }
 
 /*
  Internal Functions
- */
+*/
 
-func (p *PortalServer) loadPki(cfg  *config.PkiConfiguration) (changed bool, err error) {
+func (p *PortalServer) loadPki(cfg *config.PkiConfiguration) (changed bool, err error) {
 	if cfg == nil {
 		return fmt.Errorf("PKI Configuration not found")
 	}
@@ -43,14 +43,14 @@ func (p *PortalServer) loadPki(cfg  *config.PkiConfiguration) (changed bool, err
 	secure := tools.GetRandomBytes(32)
 	if len(cfg.ID) == 0 {
 		p.pki, err = pki.NewPki(p.S.Organisation, secure, cfg.RSAKeySize)
-		if err != nil{
+		if err != nil {
 			return false, err
 		}
-		cs :=
+		//cs :=
 	}
 }
 
-func (p *PortalServer) loadStorage(cfg  *data.InitialConfiguration) (err error) {
+func (p *PortalServer) loadStorage(cfg *data.InitialConfiguration) (err error) {
 	p.StorageWaiter.Add(1)
 	if cfg == nil {
 		return fmt.Errorf("Database Configuration not found")
@@ -84,13 +84,13 @@ func loadConfiguration(configFile string) (*config.PortalConfig, error) {
 
 /*
  Package Initialisation
- */
+*/
 
 func StartPortal(configFile string) (*PortalServer, error) {
 	p := &PortalServer{
-		StorageOnline: false,
-		PkiOnline: false,
-		HttpsOnline: false,
+		StorageOnline:    false,
+		PkiOnline:        false,
+		HttpsOnline:      false,
 		StaticHttpOnline: false,
 	}
 
@@ -110,4 +110,3 @@ func StartPortal(configFile string) (*PortalServer, error) {
 
 	return p, nil
 }
-

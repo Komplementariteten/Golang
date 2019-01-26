@@ -1,26 +1,25 @@
 package export
 
 import (
-	"ventose.cc/data"
-	"crypto/x509"
 	"crypto"
+	"crypto/x509"
 	"crypto/x509/pkix"
+	"ventose.cc/data"
 )
-
 
 type Revoked struct {
 	data.RequestContent
-	Id []byte
+	Id   []byte
 	List pkix.CertificateList
 }
 
 type CAExport struct {
 	data.RequestContent
-	Id 		[]byte
-	Cert 		[]byte
-	Key		[]byte
-	Revoked 	[]byte
-	Intermediate	[]byte
+	Id              []byte
+	Cert            []byte
+	Key             []byte
+	Revoked         []byte
+	Intermediate    []byte
 	DefaultValidity int
 }
 

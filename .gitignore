@@ -1,11 +1,8 @@
-
+bin/*
+.idea/*
 .idea/dbnavigator.xml
-
 .idea/Go.iml
-
 .idea/modules.xml
-
 .idea/workspace.xml
-
 .idea/vcs.xml
 *.db

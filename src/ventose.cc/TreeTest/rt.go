@@ -9,12 +9,12 @@ const (
 
 type node struct {
 	left, right, parent *node
-	color int
-	Value TreeValue
-	Key KeyType
+	color               int
+	Value               TreeValue
+	Key                 KeyType
 }
 
-type TreeValue interface {}
+type TreeValue interface{}
 
 type KeyType interface {
 	LessThan(interface{}) bool

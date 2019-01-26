@@ -2,30 +2,29 @@ package serverold
 
 import (
 	"fmt"
+	"math/big"
 	"sync"
 	"ventose.cc/auth"
 	"ventose.cc/data"
-	"ventose.cc/pki/certstore"
-	"ventose.cc/pki"
 	"ventose.cc/https"
-	"math/big"
+	"ventose.cc/pki"
+	"ventose.cc/pki/certstore"
 	"ventose.cc/portal/config"
 )
 
-
 type Portal struct {
-	storage       *data.DataStorage
-	certstore     *certstore.CertStore
-	pki 	      *pki.PKI
-	StorageWaiter sync.WaitGroup
-	authbackend   *auth.AuthBackend
-	http	      *HttpFrontend
-	https	      *https.HttpsFrontend
-	S 	      *config.PortalConfig
-	StorageOnline bool
-	PkiOnline     bool
+	storage          *data.DataStorage
+	certstore        *certstore.CertStore
+	pki              *pki.PKI
+	StorageWaiter    sync.WaitGroup
+	authbackend      *auth.AuthBackend
+	http             *HttpFrontend
+	https            *https.HttpsFrontend
+	S                *config.PortalConfig
+	StorageOnline    bool
+	PkiOnline        bool
 	StaticHttpOnline bool
-	HttpsOnline bool
+	HttpsOnline      bool
 }
 
 func NewPortal() *Portal {
@@ -54,7 +53,6 @@ func (p *Portal) ServePki(cfg *pki.PKIConfiguration) error {
 	p.PkiOnline = true
 	return nil
 }
-
 
 func (p *Portal) Close() {
 	if p.storage != nil && p.storage.Running {
@@ -150,7 +148,7 @@ func (p *Portal) ServeHttp(cfg *HttpFrontendConfiguration) error {
 		return fmt.Errorf("Faile to get new HttpServer with %v", err)
 	}
 
-	go func(){
+	go func() {
 		p.http.Srv.Serve(p.http.Ln)
 	}()
 
@@ -160,7 +158,7 @@ func (p *Portal) ServeHttp(cfg *HttpFrontendConfiguration) error {
 	return nil
 }
 
-func (p *Portal) createServerCert(intermediate *big.Int) (*pki.CertContainer, error){
+func (p *Portal) createServerCert(intermediate *big.Int) (*pki.CertContainer, error) {
 	serverCertReq := new(pki.CertRequest)
 	serverCertReq.Country = "The Stars"
 	serverCertReq.Email = "info@ventose.cc"
@@ -175,8 +173,6 @@ func (p *Portal) createServerCert(intermediate *big.Int) (*pki.CertContainer, er
 	}
 	return cert, nil
 }
-
-
 
 func (p *Portal) Connect() (*data.StorageConnection, error) {
 	if p.storage != nil && p.storage.Running {
@@ -225,7 +221,6 @@ func (p *Portal) LoadStorage(cfg *data.InitialConfiguration) error {
 
 	return err
 }
-
 
 func (p *Portal) LoadCertStore(cfgStr string) error {
 	defer func() error {

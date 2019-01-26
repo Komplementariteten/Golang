@@ -1,25 +1,24 @@
 package storage
 
 import (
-	"github.com/boltdb/bolt"
-	"time"
-	"os"
 	"bytes"
 	"fmt"
+	"github.com/boltdb/bolt"
+	"os"
+	"time"
 )
 
 type Store struct {
-	Db *bolt.DB
-	Meta *bolt.DB
+	Db               *bolt.DB
+	Meta             *bolt.DB
 	typeRegistration chan *MetaOpperation
 }
 
 type StoreParameter struct {
 	DbFilePath string
-	Timeout time.Duration
-	Mode os.FileMode
+	Timeout    time.Duration
+	Mode       os.FileMode
 }
-
 
 type StorableType interface {
 	Name() []byte
@@ -30,13 +29,13 @@ type StorableType interface {
 func NewStore(p *StoreParameter) (*Store, error) {
 	s := &Store{}
 
-	db, err := bolt.Open(p.DbFilePath,p.Mode, &bolt.Options{Timeout: p.Timeout} )
+	db, err := bolt.Open(p.DbFilePath, p.Mode, &bolt.Options{Timeout: p.Timeout})
 	if err != nil {
 		return nil, err
 	}
 	s.Db = db
 
-	metadb, err := bolt.Open(p.DbFilePath + ".meta", p.Mode, &bolt.Options{Timeout: p.Timeout} )
+	metadb, err := bolt.Open(p.DbFilePath+".meta", p.Mode, &bolt.Options{Timeout: p.Timeout})
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +44,7 @@ func NewStore(p *StoreParameter) (*Store, error) {
 	return s, nil
 }
 
-func (s *Store) Close () {
+func (s *Store) Close() {
 	if s.typeRegistration != nil {
 		close(s.typeRegistration)
 		s.typeRegistration = nil
@@ -53,8 +52,6 @@ func (s *Store) Close () {
 	s.Meta.Close()
 	s.Db.Close()
 }
-
-
 
 func appendBytes(a []byte, b []byte) []byte {
 	tl := len(a) + len(b) + 4

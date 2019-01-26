@@ -1,40 +1,40 @@
 package oauth
 
 import (
-	"net/http"
 	"fmt"
+	"golang.org/x/tools/go/gcimporter15/testdata"
+	"html/template"
+	"net/http"
 	"net/url"
 	"os"
-	"html/template"
-	"ventose.cc/tools"
 	"strings"
-	"ventose.cc/auth/oauth/token"
-	"golang.org/x/tools/go/gcimporter15/testdata"
 	"time"
+	"ventose.cc/auth/oauth/token"
+	"ventose.cc/tools"
 )
 
 const (
-	AUTHORIZATION_CODE  = "authorization_code"
-	REFRESH_TOKEN       = "refresh_token"
-	PASSWORD            = "password"
-	CLIENT_CREDENTIALS  = "client_credentials"
-	ASSERTION           = "assertion"
-	IMPLICIT            = "__implicit"
-	LOGIN_PATH 	    	= "login"
+	AUTHORIZATION_CODE = "authorization_code"
+	REFRESH_TOKEN      = "refresh_token"
+	PASSWORD           = "password"
+	CLIENT_CREDENTIALS = "client_credentials"
+	ASSERTION          = "assertion"
+	IMPLICIT           = "__implicit"
+	LOGIN_PATH         = "login"
 )
 
 type TemplateData struct {
-	LoginTarget string
-	FormToken string
-	LoginFieldName string
-	LoginFieldTitle string
-	PasswordFieldName string
+	LoginTarget        string
+	FormToken          string
+	LoginFieldName     string
+	LoginFieldTitle    string
+	PasswordFieldName  string
 	PasswordFieldTitle string
-	SubmitName string
+	SubmitName         string
 }
 
 type AuthorizationEndpoint struct {
-	LoginView *template.Template
+	LoginView       *template.Template
 	BaseEndpointUrl url.URL
 }
 
@@ -94,7 +94,7 @@ func (ae *AuthorizationEndpoint) handleLoginView(w http.ResponseWriter, s *Sessi
 		fmt.Fprintf(w, "<h1>Hallo Welt</h1>")
 	}
 }
-func (ae *AuthorizationEndpoint) handleLogin(w http.ResponseWriter, r *http.Request ,s *Session, client *Client) {
+func (ae *AuthorizationEndpoint) handleLogin(w http.ResponseWriter, r *http.Request, s *Session, client *Client) {
 	//csrfChallenge :=
 
 	if len(s.FormTokenText) < 128 {
@@ -107,13 +107,13 @@ func (ae *AuthorizationEndpoint) handleLogin(w http.ResponseWriter, r *http.Requ
 		http.Error(w, "Token Verifycation faulted", 500)
 	}
 
-	time.Sleep(time.Duration(s.RequestFailes + 1)  * time.Second)
+	time.Sleep(time.Duration(s.RequestFailes+1) * time.Second)
 
 	if !check {
 		s.RequestFailes++
 		e := client.AddToUrl("msg", "You are not allowed to Request")
 		if e != nil {
-			http.Redirect(w, r,  client.ClientUri.RequestURI() , http.StatusFound)
+			http.Redirect(w, r, client.ClientUri.RequestURI(), http.StatusFound)
 			return
 		} else {
 			http.Error(w, "Failed to add Message, Server Error", 500)
@@ -127,15 +127,13 @@ func (ae *AuthorizationEndpoint) handleLogin(w http.ResponseWriter, r *http.Requ
 	}
 	//challenge := p.CSRFToken
 
-
-
 }
 
 func (ae *AuthorizationEndpoint) Handle(w http.ResponseWriter, r *http.Request, s *Session, client *Client) {
 
-	if r.Method == http.MethodGet && strings.Contains(r.RequestURI, AUTH_PATH + LOGIN_PATH) {
+	if r.Method == http.MethodGet && strings.Contains(r.RequestURI, AUTH_PATH+LOGIN_PATH) {
 		ae.handleLoginView(w, s, client)
-	} else if r.Method == http.MethodPost && strings.Contains(r.RequestURI, AUTH_PATH + LOGIN_PATH) {
+	} else if r.Method == http.MethodPost && strings.Contains(r.RequestURI, AUTH_PATH+LOGIN_PATH) {
 		ae.handleLogin(w, r, s, client)
 	}
 

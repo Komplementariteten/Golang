@@ -20,8 +20,6 @@ func TestJWT_SignBase64(t *testing.T) {
 		t.Error(err)
 	}
 
-
-
 	check, err := token.Verify(b64, key)
 	if err != nil {
 		t.Error(err)
@@ -30,4 +28,3 @@ func TestJWT_SignBase64(t *testing.T) {
 		t.Error("Token Verification failed")
 	}
 }
-
