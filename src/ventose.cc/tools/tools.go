@@ -14,6 +14,7 @@ import (
 	"math"
 	"math/big"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -196,4 +197,12 @@ func StartWorker(f func(a ...interface{}), a ...interface{}) error {
 		f(a)
 	}(a)
 	return nil
+}
+
+func IsSlice(arg interface{}) (reflect.Value, bool) {
+	val := reflect.ValueOf(arg)
+	if val.Kind() == reflect.Slice || val.Kind() == reflect.Array {
+		return val, true
+	}
+	return val, false
 }
