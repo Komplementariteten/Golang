@@ -5,8 +5,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net"
-
-	"ventose.cc/portal/serverold/ctrl"
 )
 
 const (
@@ -15,16 +13,16 @@ const (
 
 type TcpConfiguration struct {
 	Port uint16
-	TLS bool
+	TLS  bool
 }
 
 type TcpServer struct {
 	listener *net.TCPListener
-	clients []*ClientConnection
+	clients  []*ClientConnection
 }
 
 type ClientConnection struct {
-	client *net.TCPConn
+	client   *net.TCPConn
 	ClientId int
 }
 
@@ -45,11 +43,7 @@ func NewTcpWrapper(configuration *TcpConfiguration) (*TcpServer, error) {
 	return s, nil
 }
 
-func (s *TcpServer) Serve(request chan []byte)  {
-
-}
-
-func (s *TcpServer) Serve(response <- chan []byte) (request chan <- []byte, closeChan chan bool){
+func (s *TcpServer) Serve(response <-chan []byte) (request chan<- []byte, closeChan chan bool) {
 	request = make(chan []byte, INPUT_QUESIZE)
 	closeChan = make(chan bool)
 	go func(localServer *TcpServer) {
@@ -66,16 +60,16 @@ func (s *TcpServer) Serve(response <- chan []byte) (request chan <- []byte, clos
 	return
 }
 
-func handleClientConnection(server *TcpServer, connection *net.TCPConn, request chan <- []byte, response <- chan []byte, quit <- chan bool)  {
+func handleClientConnection(server *TcpServer, connection *net.TCPConn, request chan<- []byte, response <-chan []byte, quit <-chan bool) {
 
 	var readBuffer bytes.Buffer
 	for {
 		select {
-		case <- quit:
+		case <-quit:
 			binary.Write(connection, binary.LittleEndian, 23)
 			close(request)
 			return
-		case responseData := <- response:
+		case responseData := <-response:
 			connection.Write(responseData)
 		}
 		readBuffer.ReadFrom(connection)
