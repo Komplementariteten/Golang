@@ -2,13 +2,16 @@ package bayes
 
 import (
 	"math"
+	"math/big"
 	"reflect"
 
 	"ventose.cc/tools"
 )
 
 type Hist struct {
-	Items map[interface{}]float64
+	precision uint
+	Items     map[interface{}]*big.Float
+	size      int
 }
 
 func NewHistogram(values interface{}) (h *Hist, ok bool) {
@@ -17,9 +20,10 @@ func NewHistogram(values interface{}) (h *Hist, ok bool) {
 		return
 	}
 	h = &Hist{}
-	h.Items = make(map[interface{}]float64)
-	len := rv.Len()
-	for i := 0; i < len; i++ {
+	h.Items = make(map[interface{}]*big.Float)
+	h.precision = 10
+	h.size = 0
+	for i := 0; i < rv.Len(); i++ {
 		item := rv.Index(i).Interface()
 		h.set(item)
 	}
@@ -28,42 +32,64 @@ func NewHistogram(values interface{}) (h *Hist, ok bool) {
 
 func (h *Hist) set(item interface{}) {
 	if _, ok := h.Items[item]; ok {
-		h.Items[item]++
+		h.Items[item].Add(h.Items[item], big.NewFloat(1))
 	} else {
-		h.Items[item] = 1
+		h.Items[item] = big.NewFloat(1).SetPrec(h.precision)
+		h.size++
 	}
 }
 
 func (h *Hist) Freq(value interface{}) (freq float64, ok bool) {
 	if _, ok = h.Items[value]; ok {
-		freq = h.Items[value]
+		freq, _ = h.Items[value].SetPrec(h.precision).Float64()
 	}
 	return
 }
 
-func (h *Hist) Get(item interface{}) (i interface{}, freq float64) {
-	i = nil
-	freq = float64(0)
+func (h *Hist) Freqs() []float64 {
+	result := make([]float64, h.size)
+	i := 0
+	for k := range h.Items {
+		result[i], _ = h.Freq(k)
+		i++
+	}
+	return result
+}
+
+func (h *Hist) Get(item interface{}) (i interface{}, res float64) {
 	if v, ok := h.Items[item]; ok {
 		i = item
-		freq = v
+		res, _ = v.Float64()
 	}
 	return
+}
+
+func (h *Hist) GetBig(item interface{}) (interface{}, *big.Float) {
+	if v, ok := h.Items[item]; ok {
+		return item, v
+	}
+	return nil, nil
 }
 
 func (h *Hist) Scale(factor float64) {
+	bigFactor := big.NewFloat(factor)
 	for k, v := range h.Items {
-		h.Items[k] = v * factor
+		s := v.Mul(v, bigFactor).SetPrec(h.precision)
+		h.Items[k] = s
+	}
+}
+
+func (h *Hist) ScaleBig(factor *big.Float) {
+	for k, v := range h.Items {
+		s := v.Mul(v, factor)
+		h.Items[k] = s
 	}
 }
 
 func (h *Hist) Incr(factor float64) {
+	bigFactor := big.NewFloat(factor)
 	for k, v := range h.Items {
-		//bigFloat := big.NewFloat(v)
-		//addValue := big.NewFloat(factor)
-		//bigFloat.Add(bigFloat, addValue)
-		//result, _ := bigFloat.Float64()
-		h.Items[k] = v + factor
+		h.Items[k] = v.SetPrec(h.precision).Add(v, bigFactor)
 	}
 }
 
@@ -72,38 +98,46 @@ func (h *Hist) Remove(item interface{}) {
 }
 
 func (h *Hist) Exponate() {
-	_, max := h.MaxFreq()
+	_, maxBig := h.MaxFreq()
 	for k, v := range h.Items {
-		h.Items[k] = math.Exp(v - max)
+		fl, _ := v.Float64()
+		flexp := math.Exp(fl)
+		h.Items[k] = big.NewFloat(flexp - maxBig).SetPrec(h.precision)
 	}
 }
 
-func (h *Hist) MaxFreq() (item interface{}, count float64) {
-	count = 0
+func (h *Hist) MaxFreq() (item interface{}, res float64) {
+	var max *big.Float
 	for i, f := range h.Items {
-		if count == 0 {
-			count = f
+		if max == nil {
+			max = f
 		}
-		if f > count {
-			count = f
+		if f.Cmp(max) >= 1 {
+			max.Set(f)
 			item = i
+			res, _ = max.Float64()
 		}
 	}
 	return
 }
 
 func (h *Hist) Substract(other *Hist) {
-	for k, v := range other.Items {
-		if _, ok := h.Items[k]; ok {
-			h.Items[k] -= v
+	wh := other
+	for k, v := range wh.Items {
+		fvalue, _ := v.Float64()
+		fvalue = fvalue * -1
+		sub := big.NewFloat(fvalue)
+		if i, ok := h.Items[k]; ok {
+			h.Items[k] = i.Add(h.Items[k], sub)
 		}
 	}
 }
 
 func (h *Hist) Total() float64 {
-	t := float64(0)
+	t := big.NewFloat(0).SetPrec(h.precision)
 	for _, v := range h.Items {
-		t += v
+		t.Add(t, v)
 	}
-	return t
+	ret, _ := t.SetPrec(h.precision).Float64()
+	return ret
 }

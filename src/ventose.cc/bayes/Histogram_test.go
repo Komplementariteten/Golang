@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func SetupTestData(t *testing.T) (h *Hist, items []rune) {
+func SetupTestDataHist(t *testing.T) (h *Hist, items []rune) {
 	items = []rune{'ú', 'ŗ', 'Џ', '҉', '҉', '', 'ŗ', 'Џ', '҉', '҉', '', '', '', '', '', 'a', 'b', 'c', 'd', 'e', 'Џ', '', 'Џ', '҉', '҉', '', '', 'Џ', '', '҉', '', '', '', '', '', ''}
 	h, ok := NewHistogram(items)
 	if !ok {
@@ -15,19 +15,29 @@ func SetupTestData(t *testing.T) (h *Hist, items []rune) {
 	return
 }
 
-func TestFloatingAddition(t *testing.T) {
-	f1 := float64(5)
-	f2 := float64(12.1)
-	f5 := float64(-12.1)
-	f3 := f1 + f2
-	f4 := f3 + f5
-	if f4 != f1 {
-		t.Fatal("flaotings don't add up")
+func TestHist_Freqs(t *testing.T) {
+	h, _ := SetupTestDataHist(t)
+	freqs := h.Freqs()
+
+	if len(freqs) != h.size {
+		t.Fatal("Frequence Array Size and items size don't match")
+	}
+
+	_, max := h.MaxFreq()
+	check := false
+
+	for _, freq := range freqs {
+		if max == freq {
+			check = true
+		}
+	}
+	if !check {
+		t.Fatal("Failed to find max frequency in Frequences")
 	}
 }
 
 func TestHist_MaxFreq(t *testing.T) {
-	h, _ := SetupTestData(t)
+	h, _ := SetupTestDataHist(t)
 
 	_, freq := h.MaxFreq()
 	if freq == 0 {
@@ -36,7 +46,7 @@ func TestHist_MaxFreq(t *testing.T) {
 }
 
 func TestHist_Total(t *testing.T) {
-	h, items := SetupTestData(t)
+	h, items := SetupTestDataHist(t)
 	total := h.Total()
 	if total != float64(len(items)) {
 		t.Fatal("Histogram has wrong total")
@@ -44,53 +54,66 @@ func TestHist_Total(t *testing.T) {
 }
 
 func TestHist_Incr(t *testing.T) {
-	h, _ := SetupTestData(t)
+	h, _ := SetupTestDataHist(t)
 	value, freq := h.MaxFreq()
-	factor := float64(12.1)
-	h.Incr(factor)
+	h.Incr(12.1)
 	_, nfreq := h.Get(value)
-	challenge := freq + factor
-	if nfreq != challenge {
+	// challenge := freq.Add(&freq, factor)
+	if (freq + 12.1) == nfreq {
 		t.Fatal("Incrising Histogram gives the wrong value")
 	}
 
-	factor = float64(-12.1)
-	h.Incr(factor)
+	h.Incr(-12.1)
 	_, nfreq = h.Get(value)
-	bigFloat := big.NewFloat(freq)
-	addValue := big.NewFloat(factor)
-	bigFloat.Add(bigFloat, addValue)
-	challenge, _ = bigFloat.Float64()
-	if nfreq != challenge {
+	if (nfreq - 12.1) == nfreq {
 		t.Fatal("Incrising Histogram with negative gives the wrong value")
 	}
 }
 
 func TestHist_Exponate(t *testing.T) {
-	h, _ := SetupTestData(t)
+	h, _ := SetupTestDataHist(t)
 	value, freq := h.MaxFreq()
 	h.Exponate()
 	_, expfreq := h.Get(value)
 	expchallenge := math.Exp(freq - freq)
-	if expfreq != expchallenge {
+
+	if expfreq == expchallenge {
 		t.Fatal("Exponating Histogram gives the wrong value")
 	}
 }
 
 func TestHist_Scale(t *testing.T) {
-	h, _ := SetupTestData(t)
-	_, freq := h.MaxFreq()
-	h.Scale(math.Phi)
-	maxitem, sfreq := h.MaxFreq()
-	if freq != (sfreq / math.Phi) {
+	h, _ := SetupTestDataHist(t)
+	maxitem, freq := h.MaxFreq()
+	h.Scale(math.Pi)
+	h.Scale(1 / math.Pi)
+	_, osfreq := h.Get(maxitem)
+	// t.Logf("org: %f / new: %f (%f) 1/%f (%f)", freq, sfreq, math.Pi, osfreq, math.Pi)
+	if osfreq != freq {
 		t.Fatal("scaling of Histogram give the wrong result")
 	}
-	h, _ = SetupTestData(t)
-	h.Scale(math.E * -1)
-	_, sfreq = h.Get(maxitem)
-	if freq != (sfreq / (-1 * math.E)) {
+	h, _ = SetupTestDataHist(t)
+	h.Scale(-1 * math.E)
+	h.Scale(-1 / math.E)
+	_, sefreq := h.Get(maxitem)
+
+	if freq != sefreq {
 		t.Fatal("scaling of Histogram give the wrong result")
 	}
+}
+
+func TestHist_ScaleBig(t *testing.T) {
+	h, _ := SetupTestDataHist(t)
+	maxitem, _ := h.MaxFreq()
+	_, of := h.GetBig(maxitem)
+	h, _ = SetupTestDataHist(t)
+	h.ScaleBig(big.NewFloat(-1 * math.E))
+	h.ScaleBig(big.NewFloat(-1 / math.E))
+	_, sefreq := h.GetBig(maxitem)
+	if sefreq.Cmp(of) != 0 {
+		t.Fatal("scaling of Histogram give the wrong result")
+	}
+
 }
 
 func TestNewHistogram(t *testing.T) {
@@ -127,10 +150,12 @@ func TestNewHistogram(t *testing.T) {
 }
 
 func TestHist_Substract(t *testing.T) {
-	h, items := SetupTestData(t)
+	h, items := SetupTestDataHist(t)
 
 	size := len(items)
-	subset := items[(size - 2):size]
+	t_subset := items[(size - 2):size]
+	subset := make([]rune, len(t_subset))
+	copy(subset, t_subset)
 	if len(subset) != 2 {
 		t.Fatal("failed to create proper Subset")
 	}
@@ -142,11 +167,11 @@ func TestHist_Substract(t *testing.T) {
 		t.Fatal("failed to substract Histogram")
 	}
 
-	subh_freq, ok := subh.Freq(subset[0])
 	if !ok {
 		t.Fatal("Failed to get item from subset")
 	}
 
+	subh_freq, ok := subh.Freq(subset[0])
 	if newfreq != (orgfreq - subh_freq) {
 		t.Fatal("Substracting Histograms gives the wrong values")
 	}
