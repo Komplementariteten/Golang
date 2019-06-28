@@ -8,7 +8,6 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
-	"github.com/siddontang/go/bson"
 	"io/ioutil"
 	"log"
 	"math"
@@ -17,6 +16,8 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/siddontang/go/bson"
 )
 
 const (

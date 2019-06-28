@@ -15,8 +15,7 @@ type Hist struct {
 }
 
 func NewHistogram(values interface{}) (h *Hist, ok bool) {
-	var rv reflect.Value
-	if rv, ok = tools.IsSlice(values); !ok {
+	if rv, ok := tools.IsSlice(values); !ok {
 		return
 	}
 	h = &Hist{}
