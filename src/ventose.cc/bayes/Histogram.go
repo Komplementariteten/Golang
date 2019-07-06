@@ -1,6 +1,7 @@
 package bayes
 
 import (
+	"log"
 	"math"
 	"math/big"
 	"reflect"
@@ -15,7 +16,8 @@ type Hist struct {
 }
 
 func NewHistogram(values interface{}) (h *Hist, ok bool) {
-	if rv, ok := tools.IsSlice(values); !ok {
+	var rv reflect.Value
+	if rv, ok = tools.IsSlice(values); !ok {
 		return
 	}
 	h = &Hist{}
@@ -73,7 +75,9 @@ func (h *Hist) GetBig(item interface{}) (interface{}, *big.Float) {
 func (h *Hist) Scale(factor float64) {
 	bigFactor := big.NewFloat(factor)
 	for k, v := range h.Items {
-		s := v.Mul(v, bigFactor).SetPrec(h.precision)
+		s := v.Mul(v, bigFactor)
+		pre := s.Prec()
+		log.Println(pre)
 		h.Items[k] = s
 	}
 }
@@ -139,4 +143,12 @@ func (h *Hist) Total() float64 {
 	}
 	ret, _ := t.SetPrec(h.precision).Float64()
 	return ret
+}
+
+// Divides all items of the Histogram in this manner factor / item
+func (h *Hist) Fraction(factor float64) {
+	bigFactor := big.NewFloat(factor)
+	for k, v := range h.Items {
+		h.Items[k] = v.Quo(bigFactor, v).SetPrec(h.precision)
+	}
 }

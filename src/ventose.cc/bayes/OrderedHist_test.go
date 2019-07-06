@@ -1,6 +1,9 @@
 package bayes
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func SetupTestDataSh(t *testing.T) (ch *SortedHist) {
 	items := []rune{'ú', 'ŗ', 'Џ', '҉', '҉', '', 'ŗ', 'Џ', '҉', '҉', '', '', '', '', '', 'a', 'b', 'c', 'd', 'e', 'Џ', '', 'Џ', '҉', '҉', '', '', 'Џ', '', '҉', '', '', '', '', '', ''}
@@ -36,7 +39,18 @@ func TestSortedHist_Scale(t *testing.T) {
 	fs := sl.Freqs()
 	sl.Scale(0.1)
 	ss := sl.Freqs()
-	if fs[0] == ss[0] {
+	test := ss[0] / 0.1
+	if fs[0] == math.Floor(test) {
 		t.Fatal("Frequences match after scaling")
+	}
+}
+
+func TestSortedHist_Frac(t *testing.T) {
+	sl := SetupTestDataSh(t)
+	fs := sl.Freqs()
+	sl.Frac(0.1)
+	ss := sl.Freqs()
+	if fs[0] == ss[0] {
+		t.Fatal("Frequences match after dividing")
 	}
 }
