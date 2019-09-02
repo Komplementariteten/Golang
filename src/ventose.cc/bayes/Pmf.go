@@ -2,7 +2,6 @@ package bayes
 
 import (
 	"errors"
-	"math/big"
 )
 
 type Pmf struct {
@@ -35,9 +34,9 @@ func (p *Pmf) Normalize(fraction float64) error {
 	if total == 0.0 {
 		return errors.New("total probability is zero")
 	}
-	bigRatTotal := new(big.Rat).SetFrac(big.NewInt(1), big.NewInt(int64(total)))
+	// bigRatTotal := new(big.Rat).SetFrac(big.NewInt(1), big.NewInt(int64(total)))
 	p.Scale(fraction)
-	p.Frac(bigRatTotal)
+	p.Frac(1)
 	return nil
 }
 

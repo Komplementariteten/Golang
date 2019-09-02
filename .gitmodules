@@ -1,0 +1,3 @@
+[submodule "go-serial"]
+	path = go-serial
+	url = https://github.com/jacobsa/go-serial

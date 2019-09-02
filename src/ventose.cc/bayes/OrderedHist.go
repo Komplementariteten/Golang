@@ -79,7 +79,7 @@ func (s *SortedHist) Scale(factor float64) {
 	*s = *scaledList
 }
 
-func (s *SortedHist) Frac(factor *big.Rat) {
+func (s *SortedHist) Frac(factor float64) {
 	s.h.Fraction(factor)
 	scaledList := CreateSortedHist(s.h)
 	*s = *scaledList
