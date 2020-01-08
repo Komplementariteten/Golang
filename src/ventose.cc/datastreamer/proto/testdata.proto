@@ -1,0 +1,17 @@
+syntax = "proto3";
+package datastreamer;
+
+option csharp_namespace = "ProtoClient";
+
+message Content {
+    int64 fe = 1;
+    int64 ctp = 2;
+    int64 channel = 3;
+    repeated Gatesignal gate = 4;
+}
+
+message Gatesignal {
+    int64 GateATof = 1;
+    int64 GateBTof = 2;
+    int64 Amp = 3;
+}
