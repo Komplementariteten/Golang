@@ -1,0 +1,20 @@
+{{define "title"}}file list{{end}}
+{{define "content"}}
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+<div class="block">
+<ul>
+    {{range .Files }}
+        <li><a href="/file/{{ .Code }}"> {{ .Name }}</a></li>
+    {{end}}
+</ul>
+</div>
+<aside >
+    <script>
+        Dropzone.options.myDropzone = {};
+    </script>
+    <form action="/file/" class="dropzone" id="my-dropzone">
+        <input type="file" name="file"  />
+    </form>
+</aside>
+{{end}}
