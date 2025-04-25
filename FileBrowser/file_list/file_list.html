@@ -4,8 +4,8 @@
 <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
 <div class="block">
 <ul>
-    {{range .Files }}
-        <li><a href="/file/{{ .Code }}"> {{ .Name }}</a></li>
+    {{range .Entries }}
+        <li><a href="/file/{{ .Id }}"> {{ .FileName }}</a></li>
     {{end}}
 </ul>
 </div>
@@ -13,7 +13,7 @@
     <script>
         Dropzone.options.myDropzone = {};
     </script>
-    <form action="/file/" class="dropzone" id="my-dropzone">
+    <form action="/file/upload" class="dropzone" id="my-dropzone">
         <input type="file" name="file"  />
     </form>
 </aside>

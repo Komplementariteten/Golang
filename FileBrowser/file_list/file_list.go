@@ -3,10 +3,8 @@ package file_list
 import (
 	"FileBrowser/common"
 	"html/template"
-	"io/fs"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -26,10 +24,7 @@ func FileListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	l, rerr := readFileList(s.ContentListId)
-	if rerr != nil {
-		http.Error(w, rerr.Error(), http.StatusBadRequest)
-	}
+	l := common.GetContentList(s)
 	t, te := template.ParseFiles("static/base.html", "file_list/file_list.html")
 	if te != nil {
 		panic(te)
@@ -40,38 +35,9 @@ func FileListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err := t.Execute(w, p)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-}
-
-func readFileList(path string) (*FolderContent, error) {
-
-	m, merr := fs.Glob(os.DirFS(path), "*")
-	if merr != nil {
-		return &FolderContent{}, merr
-	}
-
-	var items []FileItem
-	var folders []string
-	for _, f := range m {
-		fileInfo, fierr := os.Stat(f)
-		if fierr != nil {
-			return &FolderContent{}, fierr
-		}
-		if fileInfo.IsDir() {
-			folders = append(folders, f)
-			continue
-		}
-
-		items = append(items, FileItem{
-			Name: f,
-			Size: fileInfo.Size(),
-		})
-	}
-	return &FolderContent{
-		Files: items,
-		Cwd:   path,
-	}, nil
 }
 
 type FolderContent struct {

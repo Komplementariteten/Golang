@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"sync"
 )
@@ -38,6 +39,20 @@ func readOrNewContentList(session *Session) *ContentList {
 	return &c
 }
 
+func StoreContentList(contentList *ContentList) error {
+	file_path := filepath.Join(Enviroment().BaseDir, LIST_PATH, contentList.Id)
+	cbytes, cerr := json.Marshal(contentList)
+	if cerr != nil {
+		return cerr
+	}
+
+	werr := os.WriteFile(file_path, cbytes, 0600)
+	if werr != nil {
+		return werr
+	}
+	return nil
+}
+
 func GetContentList(session *Session) *ContentList {
 	// Initialize
 	if contentLists == nil {
@@ -62,11 +77,13 @@ func GetContentList(session *Session) *ContentList {
 }
 
 func newContentList(id string) (ContentList, error) {
-	if _, err := os.Stat(id); os.IsNotExist(err) {
+	listfile_path := path.Join(Enviroment().BaseDir, LIST_PATH)
+
+	if _, err := os.Stat(listfile_path); os.IsNotExist(err) {
 		os.Mkdir(id, 0700)
 	}
 
-	file, fp_err := CreateOrOpenFile(filepath.Join("."+LIST_PATH, id))
+	file, fp_err := CreateOrOpenFile(filepath.Join(listfile_path, id))
 	if fp_err != nil {
 		return ContentList{}, fp_err
 	}
@@ -89,14 +106,16 @@ func newContentList(id string) (ContentList, error) {
 	return newList, nil
 }
 
-func readContentList(path string) (ContentList, error) {
-	if _, err := os.Stat(LIST_PATH); os.IsNotExist(err) {
-		os.Mkdir(LIST_PATH, 0700)
+func readContentList(fileListId string) (ContentList, error) {
+	listfile_path := path.Join(Enviroment().BaseDir, LIST_PATH)
+
+	if _, err := os.Stat(listfile_path); os.IsNotExist(err) {
+		os.Mkdir(listfile_path, 0700)
 	}
 
-	file, fp_err := CreateOrOpenFile(filepath.Join(LIST_PATH, path))
+	file, fp_err := CreateOrOpenFile(filepath.Join(listfile_path, fileListId))
 	if fp_err != nil {
-
+		return ContentList{}, fp_err
 	}
 	defer file.Close()
 
