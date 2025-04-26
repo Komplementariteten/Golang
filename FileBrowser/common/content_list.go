@@ -1,7 +1,7 @@
 package common
 
 import (
-	"bytes"
+	"FileBrowser/env"
 	"encoding/json"
 	"github.com/google/uuid"
 	"io"
@@ -30,7 +30,6 @@ func readOrNewContentList(session *Session) *ContentList {
 	}
 	c, new_err := readContentList(session.ContentListId)
 	if new_err != nil {
-		log.Println(new_err)
 		c, new_err = newContentList(session.ContentListId)
 		if new_err != nil {
 			log.Fatal(new_err)
@@ -40,7 +39,7 @@ func readOrNewContentList(session *Session) *ContentList {
 }
 
 func StoreContentList(contentList *ContentList) error {
-	file_path := filepath.Join(Enviroment().BaseDir, LIST_PATH, contentList.Id)
+	file_path := filepath.Join(env.Enviroment().BaseDir, LIST_PATH, contentList.Id)
 	cbytes, cerr := json.Marshal(contentList)
 	if cerr != nil {
 		return cerr
@@ -77,17 +76,13 @@ func GetContentList(session *Session) *ContentList {
 }
 
 func newContentList(id string) (ContentList, error) {
-	listfile_path := path.Join(Enviroment().BaseDir, LIST_PATH)
+	listfile_path := path.Join(env.Enviroment().BaseDir, LIST_PATH)
 
 	if _, err := os.Stat(listfile_path); os.IsNotExist(err) {
 		os.Mkdir(id, 0700)
 	}
 
-	file, fp_err := CreateOrOpenFile(filepath.Join(listfile_path, id))
-	if fp_err != nil {
-		return ContentList{}, fp_err
-	}
-	defer file.Close()
+	listFile := path.Join(listfile_path, id)
 
 	newList := ContentList{
 		Entries:    make([]ListEntry, 0),
@@ -98,16 +93,17 @@ func newContentList(id string) (ContentList, error) {
 	if j_err != nil {
 		return ContentList{}, j_err
 	}
-	_, w_err := io.Copy(file, bytes.NewReader(b))
-	if w_err != nil {
-		return ContentList{}, w_err
+
+	werr := os.WriteFile(listFile, b, 0600)
+	if werr != nil {
+		return ContentList{}, werr
 	}
 
 	return newList, nil
 }
 
 func readContentList(fileListId string) (ContentList, error) {
-	listfile_path := path.Join(Enviroment().BaseDir, LIST_PATH)
+	listfile_path := path.Join(env.Enviroment().BaseDir, LIST_PATH)
 
 	if _, err := os.Stat(listfile_path); os.IsNotExist(err) {
 		os.Mkdir(listfile_path, 0700)
@@ -131,6 +127,15 @@ func readContentList(fileListId string) (ContentList, error) {
 	return contentList, nil
 }
 
+func (list *ContentList) FindFile(uuid string) *ListEntry {
+	for _, entry := range list.Entries {
+		if entry.Id == uuid {
+			return &entry
+		}
+	}
+	return nil
+}
+
 type ContentList struct {
 	Entries    []ListEntry `json:"entries"`
 	StorageDir string      `json:"base_dir"`
@@ -145,4 +150,5 @@ type ListEntry struct {
 	Type     FileType `json:"type"`
 	Id       string   `json:"id"`
 	ParentId string   `json:"parent_id"`
+	Link     string   `json:"link"`
 }

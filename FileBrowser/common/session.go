@@ -28,7 +28,7 @@ func SessionFromCookie(r *http.Request) (*Session, error) {
 	if cerr != nil {
 		return nil, cerr
 	}
-	
+
 	return loadSession(cookie.Value)
 }
 

@@ -5,7 +5,7 @@
 <div class="block">
 <ul>
     {{range .Entries }}
-        <li><a href="/file/{{ .Id }}"> {{ .FileName }}</a></li>
+        <li><a href="/file/{{ .Link }}"> {{ .FileName }}</a>&nbsp;<span>{{.Sig}}</span></li>
     {{end}}
 </ul>
 </div>

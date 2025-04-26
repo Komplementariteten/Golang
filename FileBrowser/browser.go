@@ -2,6 +2,7 @@ package main
 
 import (
 	"FileBrowser/common"
+	"FileBrowser/env"
 	"FileBrowser/file"
 	"FileBrowser/file_list"
 	"FileBrowser/pki"
@@ -14,9 +15,9 @@ import (
 func main() {
 	if len(os.Args) < 2 {
 		wd, _ := os.Getwd()
-		common.Enviroment().SetWd(wd)
+		env.Enviroment().SetWd(wd)
 	} else {
-		common.Enviroment().SetWd(os.Args[1])
+		env.Enviroment().SetWd(os.Args[1])
 	}
 	pki.Init()
 	fs := http.FileServer(http.Dir("static"))

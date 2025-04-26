@@ -51,9 +51,9 @@ func SessionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func newSession() *common.Session {
-	session_id := uuid.New().String()
+	sessionId := uuid.New().String()
 	session := &common.Session{
-		Id: session_id,
+		Id: sessionId,
 	}
 	c := common.GetContentList(session)
 	session.ContentListId = c.Id
