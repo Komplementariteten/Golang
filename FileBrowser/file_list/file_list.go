@@ -30,7 +30,7 @@ func FileListHandler(w http.ResponseWriter, r *http.Request) {
 		panic(te)
 	}
 	p := &common.Page{
-		Title:   "File List",
+		Title:   "Shared files",
 		Content: l,
 	}
 	err := t.Execute(w, p)

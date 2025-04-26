@@ -2,19 +2,34 @@
 {{define "content"}}
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
-<div class="block">
-<ul>
-    {{range .Entries }}
-        <li><a href="/file/{{ .Link }}"> {{ .FileName }}</a>&nbsp;<span>{{.Sig}}</span></li>
-    {{end}}
-</ul>
+<div class="fixed-grid has-4-cols" >
+    <div class="grid">
+    <div class="cell is-col-span-3">
+        <table class="table">
+            <thead>
+            <th><addr title="File">File</addr></th>
+            <th><addr title="Size">Size</addr></th>
+            <th><addr title="MD5 Sum">md5sum</addr></th>
+            </thead>
+            <tbody>
+            {{range .Entries }}
+                <tr>
+                    <td><a href="/file/{{ .Link }}"> {{ .FileName }}</a></td>
+                    <td><span>{{ .Size }}</span></td>
+                    <td><span>{{ .Sig }}</span></td>
+                </tr>
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+    <div class="cell" >
+        <script>
+            Dropzone.options.myDropzone = {};
+        </script>
+        <h3 class="title is-3">Upload files</h3>
+        <form action="/file/upload" class="dropzone" id="my-dropzone">
+        </form>
+    </div>
+    </div>
 </div>
-<aside >
-    <script>
-        Dropzone.options.myDropzone = {};
-    </script>
-    <form action="/file/upload" class="dropzone" id="my-dropzone">
-        <input type="file" name="file"  />
-    </form>
-</aside>
 {{end}}

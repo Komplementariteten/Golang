@@ -89,6 +89,8 @@ func FileHandle(w http.ResponseWriter, r *http.Request) {
 		if merr != nil {
 			http.Error(w, merr.Error(), http.StatusInternalServerError)
 		}
+		target := common.LIST_PATH + c.Id
+		http.Redirect(w, r, target, http.StatusFound)
 	}
 }
 

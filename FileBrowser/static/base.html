@@ -7,9 +7,11 @@
     <title>{{ template "title" . }}</title>
     <link rel="stylesheet" href="/static/base.css" />
 </head>
-<body class="section">
+<body class="container">
 <section class="section is-large" >
-    <p class="title is-1">{{ .Title }}</p>
+    <div class="box">
+    <h1 class="title is-1">{{ .Title }}</h1>
+    </div>
     <div class="container">
         {{ template "content" .Content }}
     </div>
