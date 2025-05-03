@@ -26,7 +26,13 @@ func FileHandle(w http.ResponseWriter, r *http.Request) {
 	if serr != nil {
 		http.Error(w, serr.Error(), http.StatusForbidden)
 	}
+	if s == nil {
+		http.Error(w, "Not allowed", http.StatusForbidden)
+	}
 	c := common.GetContentList(s)
+	if c == nil {
+		http.Error(w, "Not allowed", http.StatusForbidden)
+	}
 	if r.Method == "GET" {
 		file_id := strings.Replace(r.URL.Path, common.FILE_PATH, "", 1)
 		cipher, derr := base64.RawURLEncoding.DecodeString(file_id)

@@ -137,9 +137,11 @@ func (list *ContentList) FindFile(uuid string) *ListEntry {
 }
 
 type ContentList struct {
-	Entries    []ListEntry `json:"entries"`
-	StorageDir string      `json:"base_dir"`
-	Id         string      `json:"id"`
+	Entries     []ListEntry `json:"entries"`
+	StorageDir  string      `json:"base_dir"`
+	Id          string      `json:"id"`
+	Title       string      `json:"title"`
+	Description string      `json:"description"`
 }
 
 type ListEntry struct {

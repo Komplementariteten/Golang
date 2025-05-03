@@ -39,15 +39,3 @@ func FileListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-
-type FolderContent struct {
-	Cwd        string
-	FolderPath []string
-	Files      []FileItem
-}
-
-type FileItem struct {
-	Name string
-	Size int64
-	Code string
-}

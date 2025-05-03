@@ -1,6 +1,7 @@
 package main
 
 import (
+	"FileBrowser/admin"
 	"FileBrowser/common"
 	"FileBrowser/env"
 	"FileBrowser/file"
@@ -25,5 +26,6 @@ func main() {
 	http.HandleFunc(common.LIST_PATH, file_list.FileListHandler)
 	http.HandleFunc(common.SESSION_PATH, session.SessionHandler)
 	http.HandleFunc(common.FILE_PATH, file.FileHandle)
+	http.HandleFunc(common.ADMIN_ROOT, admin.ManageHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

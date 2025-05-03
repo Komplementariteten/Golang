@@ -3,10 +3,15 @@
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
 <div class="fixed-grid has-4-cols" >
+    <div class="box">
+        <h3 class="title is-6">{{.Title}}</h3>
+        <p >{{.Description}}</p>
+    </div>
     <div class="grid">
     <div class="cell is-col-span-3">
         <table class="table">
             <thead>
+            <th><addr title="Type">&nbsp;</addr></th>
             <th><addr title="File">File</addr></th>
             <th><addr title="Size">Size</addr></th>
             <th><addr title="MD5 Sum">md5sum</addr></th>
@@ -14,6 +19,11 @@
             <tbody>
             {{range .Entries }}
                 <tr>
+                    <td>
+                        <span class="icon">
+                            <ion-icon name="document"></ion-icon>
+                        </span>
+                    </td>
                     <td><a href="/file/{{ .Link }}"> {{ .FileName }}</a></td>
                     <td><span>{{ .Size }}</span></td>
                     <td><span>{{ .Sig }}</span></td>
@@ -24,9 +34,11 @@
     </div>
     <div class="cell" >
         <script>
-            Dropzone.options.myDropzone = {};
+            Dropzone.options.myDropzone = {
+                maxFilesize: 1024
+            };
         </script>
-        <h3 class="title is-3">Upload files</h3>
+        <h3 class="title is-6">Upload files</h3>
         <form action="/file/upload" class="dropzone" id="my-dropzone">
         </form>
     </div>

@@ -1,0 +1,19 @@
+body {
+    font-family: "Share Tech Mono", monospace;
+    font-weight: 400;
+    font-style: normal;
+    background-color: black;
+    color: greenyellow;
+}
+
+:root {
+    --text-color: greenyellow;
+    --bulma-title-color: var(--text-color);
+    --bluma-table-color: var(--text-color);
+    --bulma-text-color: var(--text-color);
+    --bulma-text-strong: var(--text-color);
+}
+
+#my-dropzone {
+    color: darkmagenta;
+}
